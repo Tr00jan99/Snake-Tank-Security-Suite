@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Tank Security Suite - Presentation Slides</title>
+    <!-- Import Outfit and Inter fonts from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --accent-primary: #06b6d4; /* Neon Cyan */
+            --accent-secondary: #10b981; /* Neon Green */
+            --accent-warning: #f59e0b; /* Yellow */
+            --accent-danger: #ef4444; /* Red */
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-border: rgba(6, 182, 212, 0.15);
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --transition-speed: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Header Navigation */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2.5rem;
+            background-color: rgba(10, 14, 26, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-shield {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: 0.5px;
+            background: linear-gradient(to right, #ffffff, var(--accent-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .controls-top {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Bilingual Toggle Switch */
+        .lang-switch {
+            display: flex;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 4px;
+            cursor: pointer;
+            position: relative;
+            width: 220px;
+            height: 38px;
+            user-select: none;
+        }
+
+        .lang-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            z-index: 2;
+            color: var(--text-muted);
+            transition: color var(--transition-speed);
+            gap: 6px;
+        }
+
+        .lang-btn.active {
+            color: #ffffff;
+        }
+
+        .lang-bg {
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            width: 104px;
+            background: linear-gradient(135deg, var(--accent-primary), rgba(6, 182, 212, 0.6));
+            border-radius: 25px;
+            z-index: 1;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
+
+        .lang-en-active .lang-bg {
+            transform: translateX(108px);
+        }
+
+        /* Slide Main Area */
+        main {
+            flex: 1;
+            display: flex;
+            position: relative;
+            height: calc(100vh - 180px); /* Account for header and speaker notes */
+        }
+
+        /* Side Index Panel */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+            padding-left: 8px;
+        }
+
+        .index-item {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            text-align: left;
+            background: none;
+            width: 100%;
+        }
+
+        .index-item:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        .index-item.active {
+            background-color: rgba(6, 182, 212, 0.08);
+            border-color: rgba(6, 182, 212, 0.3);
+            color: var(--accent-primary);
+            font-weight: 600;
+            box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.05);
+        }
+
+        /* Presentation Container */
+        .slide-container {
+            flex: 1;
+            padding: 2.5rem 4rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.03) 0%, transparent 50%),
+                              radial-gradient(circle at 10% 80%, rgba(16, 185, 129, 0.02) 0%, transparent 40%);
+        }
+
+        /* Slide Component styling */
+        .slide {
+            position: absolute;
+            width: calc(100% - 8rem);
+            height: calc(100% - 5rem);
+            opacity: 0;
+            transform: translateX(100px);
+            pointer-events: none;
+            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        .slide.previous {
+            transform: translateX(-100px);
+        }
+
+        .slide-title-area {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .slide-tag {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .slide-title {
+            font-family: var(--font-display);
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .slide-content {
+            flex: 1;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        /* Utility Cards */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 10px;
+        }
+
+        .card-custom {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0.8;
+        }
+
+        .card-custom:hover {
+            transform: translateY(-5px);
+            border-color: rgba(6, 182, 212, 0.4);
+            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.08);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Slide specific layouts */
+        .hero-layout {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-img-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1.5px solid rgba(6, 182, 212, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            background: #0f172a;
+            aspect-ratio: 16/10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .badge-cyber {
+            background-color: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            color: var(--accent-primary);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-family: var(--font-display);
+            letter-spacing: 0.5px;
+        }
+
+        .bullet-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .bullet-list li {
+            position: relative;
+            padding-left: 28px;
+            font-size: 1.05rem;
+        }
+
+        .bullet-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 2px;
+            color: var(--accent-secondary);
+            font-weight: bold;
+            font-size: 1.1rem;
+            background-color: rgba(16, 185, 129, 0.1);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        /* Flowchart styling */
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .flow-node {
+            background: var(--card-bg);
+            border: 1.5px solid var(--accent-primary);
+            border-radius: 12px;
+            padding: 1.2rem;
+            width: 190px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+
+        .flow-node-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .flow-node-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .flow-arrow {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            position: relative;
+            z-index: 1;
+            opacity: 0.6;
+        }
+
+        .flow-arrow::after {
+            content: "➔";
+            position: absolute;
+            right: 0;
+            top: -10px;
+            color: var(--accent-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Table Styling */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+            background-color: var(--bg-secondary);
+        }
+
+        th {
+            background-color: rgba(17, 24, 39, 0.9);
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: #ffffff;
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        td {
+            padding: 12px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--text-main);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        .badge-table {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-green {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .badge-red {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        .badge-orange {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        /* Timeline / Demo Workflow list */
+        .timeline-steps {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .timeline-step {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: border-color 0.2s;
+        }
+
+        .timeline-step:hover {
+            border-color: rgba(6, 182, 212, 0.3);
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: #ffffff;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px auto;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.4);
+        }
+
+        .step-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Bottom Controls / Speaker Notes */
+        footer {
+            height: 100px;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2.5rem;
+            z-index: 100;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: rgba(6, 182, 212, 0.1);
+            border-color: var(--accent-primary);
+            color: #ffffff;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Interactive Speaker Notes Panel */
+        .notes-toggle {
+            background-color: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: #34d399;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notes-toggle:hover {
+            background-color: rgba(16, 185, 129, 0.15);
+            border-color: #34d399;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+
+        .notes-drawer {
+            position: fixed;
+            bottom: 100px;
+            left: 260px; /* Sidebar offset */
+            right: 0;
+            background-color: #0f1626;
+            border-top: 1px solid rgba(6, 182, 212, 0.2);
+            padding: 1.5rem 2.5rem;
+            box-shadow: 0 -15px 35px rgba(0, 0, 0, 0.4);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 90;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .notes-drawer.open {
+            transform: translateY(0);
+        }
+
+        .notes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.5rem;
+        }
+
+        .notes-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--accent-secondary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notes-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-main);
+            font-style: italic;
+        }
+
+        /* Keyboard tips styling */
+        .tips-kbd {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .kbd-key {
+            background-color: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header section -->
+    <header>
+        <div class="logo-container">
+            <div class="logo-shield"></div>
+            <div class="logo-text">SNAKE TANK SECURITY SUITE</div>
+        </div>
+        
+        <div class="controls-top">
+            <!-- Language switch toggle -->
+            <div class="lang-switch" id="langSwitch" onclick="toggleLanguage()">
+                <div class="lang-bg"></div>
+                <div class="lang-btn active" id="btn-ms">🇲🇾 Bahasa Melayu</div>
+                <div class="lang-btn" id="btn-en">🇬🇧 English</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Slide Body -->
+    <main>
+        <!-- Sidebar Navigation Index -->
+        <aside class="sidebar">
+            <div class="sidebar-title" id="idx-sidebar-title">Slaid Pembentangan</div>
+            <button class="index-item active" onclick="goToSlide(0)" data-slide="0">1. Tajuk Utama</button>
+            <button class="index-item" onclick="goToSlide(1)" data-slide="1">2. Pernyataan Masalah</button>
+            <button class="index-item" onclick="goToSlide(2)" data-slide="2">3. Pengenalan Sistem</button>
+            <button class="index-item" onclick="goToSlide(3)" data-slide="3">4. Ciri-Ciri Utama</button>
+            <button class="index-item" onclick="goToSlide(4)" data-slide="4">5. Seni Bina Teknikal</button>
+            <button class="index-item" onclick="goToSlide(5)" data-slide="5">6. Perbandingan Alatan</button>
+            <button class="index-item" onclick="goToSlide(6)" data-slide="6">7. Aliran Demonstrasi</button>
+            <button class="index-item" onclick="goToSlide(7)" data-slide="7">8. Sumbangan Projek</button>
+            <button class="index-item" onclick="goToSlide(8)" data-slide="8">9. Kesimpulan & Q&A</button>
+        </aside>
+
+        <!-- Slide Content viewport -->
+        <section class="slide-container">
+
+            <!-- SLIDE 1 -->
+            <div class="slide active" id="slide-0">
+                <div class="hero-layout">
+                    <div>
+                        <span class="badge-cyber" id="s1-badge">PROJEK AKHIR TAHUN / ASSIGNMENT</span>
+                        <h1 class="slide-title" id="s1-title" style="font-size: 2.8rem; margin-bottom: 1.5rem;">
+                            Snake Tank Security Suite: Alat Pengauditan & Hardening Mudah Alih Gred Enterprise
+                        </h1>
+                        <p id="s1-desc" style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem; line-height: 1.6;">
+                            Pembangunan Aplikasi Pengauditan Kerentanan Bersepadu Native PowerShell & WPF untuk Windows Endpoint. 100% Bebas Kebergantungan (Zero-Dependency) & Sedia USB.
+                        </p>
+                        <div style="border-left: 3px solid var(--accent-primary); padding-left: 15px; font-size: 0.95rem;">
+                            <p style="font-weight: 600;"><span id="s1-author-lbl">Pembentang:</span> <span style="color: #ffffff;">SYAFIQ RIDZUAN</span></p>
+                            <p style="color: var(--text-muted);"><span id="s1-major-lbl">Jurusan:</span> [Jurusan / Kursus Keselamatan Siber]</p>
+                            <p style="color: var(--text-muted);"><span id="s1-advisor-lbl">Nama Penyelia:</span> [Nama Pensyarah / Penyelia]</p>
+                        </div>
+                    </div>
+                    <div class="hero-img-container">
+                        <img class="hero-img" src="assets/system_hardening_shield.png" alt="System Hardening Shield" onerror="this.src='https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=600&q=80'">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2 -->
+            <div class="slide" id="slide-1">
+                <div class="slide-title-area">
+                    <span class="slide-tag" id="s2-tag">SLIDE 02</span>
+                    <h2 class="slide-title" id="s2-title">Pernyataan Masalah (Problem Statement)</h2>
+                </div>
+                <div class="grid-cards">
+                    <div class="card-custom">
+                        <div class="card-icon">⚙️</div>
+                        <h3 class="card-title" id="s2-c1-title">Kerumitan Hardening Windows</h3>
+                        <p class="card-desc" id="s2-c1-desc">Proses mengukuhkan sistem (seperti konfigurasi port, registry, dan polisi anonymous SAM/SID) secara manual adalah sangat rumit, leceh, dan terdedah kepada kesilapan konfigurasi.</p>
+                    </div>
+                    <div class="card-custom">
+                        <div class="card-icon">⚖️</div>
+                        <h3 class="card-title" id="s2-c2-title">Kebergantungan Alatan Luar yang Berat</h3>
+                        <p class="card-desc" id="s2-c2-desc">Scanner industri seperti Nessus/Qualys memerlukan installation server yang berat, lesen yang mahal, runtime khas (seperti Java), serta ejen latar belakang yang mengurangkan prestasi.</p>
+                    </div>
+                    <div class="card-custom">
+                        <div class="card-icon">🛡️</div>
+                        <h3 class="card-title" id="s2-c3-title">Tiada Ciri Pembaikan Terus (Fix)</h3>
+                        <p class="card-desc" id="s2-c3-desc">Hampir keseluruhan scanner keselamatan di pasaran bersifat "Read-Only" (Audit). Mereka hanya memberi tahu celah kerentanan tetapi tidak membaikinya secara programmatik.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3 -->
+            <div class="slide" id="slide-2">
+                <div class="hero-layout">
+                    <div>
+                        <span class="slide-tag" id="s3-tag">SLIDE 03</span>
+                        <h2 class="slide-title" id="s3-title" style="margin-bottom: 1.2rem;">Pengenalan Snake Tank Security Suite</h2>
+                        <ul class="bullet-list">
+                            <li id="s3-l1"><strong>Solusi Dwi-Tindakan Bersepadu:</strong> Menggabungkan keupayaan Pengauditan Keselamatan Sistem (Audit) dan Pengukuhan Aktif (Hardening) dalam satu platform grafik interaktif.</li>
+                            <li id="s3-l2"><strong>Mudah Alih Sempurna (100% Portable):</strong> Berfungsi sepenuhnya sebagai alatan sifar ejen (agentless) tanpa sebarang pemasangan. Boleh dijalankan terus daripada pemacu USB pada mesin sasaran.</li>
+                            <li id="s3-l3"><strong>Pembinaan Natif Windows:</strong> Kod sumber berasaskan native <strong>PowerShell 5.1</strong> dan <strong>WPF/XAML</strong>. Ringan, laju, dan menggunakan API terbina bagi meminimumkan amaran dari perisian keselamatan (AV).</li>
+                        </ul>
+                    </div>
+                    <div class="hero-img-container">
+                        <img class="hero-img" src="assets/cybersecurity_dashboard.png" alt="Cybersecurity Dashboard" onerror="this.src='https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80'">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 4 -->
+            <div class="slide" id="slide-3">
+                <div class="slide-title-area">
+                    <span class="slide-tag" id="s4-tag">SLIDE 04</span>
+                    <h2 class="slide-title" id="s4-title">Ciri-Ciri Utama & Kehebatan Sistem</h2>
+                </div>
+                <div class="grid-cards">
+                    <div class="card-custom">
+                        <div class="card-icon">🔍</div>
+                        <h3 class="card-title" id="s4-c1-title">24 Audit Checks & 16 Rules</h3>
+                        <p class="card-desc" id="s4-c1-desc">Mengimbas 24 celah kritikal termasuk RDP, firewall, kawalan akaun (UAC), autorun, dan kelayakan sistem. Diperkuat dengan 16 remedi hardening automatik.</p>
+                    </div>
+                    <div class="card-custom">
+                        <div class="card-icon">⚡</div>
+                        <h3 class="card-title" id="s4-c2-title">Software & CISA KEV Auditor</h3>
+                        <p class="card-desc" id="s4-c2-desc">Memetakan aplikasi terpasang dengan katalog ancaman global <strong>CISA KEV</strong> secara langsung. Menyokong carian rawak CVE API bertaraf dunia dengan skor CVSS berwarna.</p>
+                    </div>
+                    <div class="card-custom">
+                        <div class="card-icon">🎯</div>
+                        <h3 class="card-title" id="s4-c3-title">Pembaikan Bersyarat Pintar</h3>
+                        <p class="card-desc" id="s4-c3-desc">Sistem 'Harden All' membaca lencana UI komputer sasaran secara real-time dan hanya mengeksekusi remedi bagi status yang dikesan sebagai 'VULNERABLE' secara terpilih.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 5 -->
+            <div class="slide" id="slide-4">
+                <div class="slide-title-area">
+                    <span class="slide-tag" id="s5-tag">SLIDE 05</span>
+                    <h2 class="slide-title" id="s5-title">Seni Bina Teknikal & Kestabilan Sistem</h2>
+                </div>
+                <div class="slide-content">
+                    <p id="s5-desc" style="color: var(--text-muted); margin-bottom: 1.5rem;">Seni bina native Snake Tank direka bagi memastikan keselamatan, kualiti kod optimum, dan ketepatan operasi pada sistem operasi Windows:</p>
+                    
+                    <div class="flow-container">
+                        <div class="flow-node">
+                            <div class="flow-node-title">User UI (WPF/XAML)</div>
+                            <div class="flow-node-desc" id="s5-n1-desc">Teras grafik responsif tanpa pemproses latar belakang yang berat.</div>
+                        </div>
+                        <div class="flow-arrow"></div>
+                        <div class="flow-node" style="border-color: var(--accent-secondary);">
+                            <div class="flow-node-title">PowerShell 5.1 Engine</div>
+                            <div class="flow-node-desc" id="s5-n2-desc">Pemprosesan logik, penapis ralat (Try-Catch), dan pengasingan benang (threading).</div>
+                        </div>
+                        <div class="flow-arrow"></div>
+                        <div class="flow-node">
+                            <div class="flow-node-title">Set-RegistryDword Helper</div>
+                            <div class="flow-node-desc" id="s5-n3-desc">Memaksa ketepatan jenis data REG_DWORD untuk memintas ralat OS.</div>
+                        </div>
+                        <div class="flow-arrow"></div>
+                        <div class="flow-node" style="border-color: var(--accent-warning);">
+                            <div class="flow-node-title">External API / OS API</div>
+                            <div class="flow-node-desc" id="s5-n4-desc">Carian CISA KEV JSON, CIRCL CVE, dan bacaan registry Windows.</div>
+                        </div>
+                    </div>
+
+                    <ul class="bullet-list" style="margin-top: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <li id="s5-l1"><strong>Automated Test Harness:</strong> Disertakan skrip ujian unit <code style="color: var(--accent-primary);">test_harness.ps1</code> untuk pengesahan automatik gred profesional dengan kadar kejayaan 100%.</li>
+                        <li id="s5-l2"><strong>Type-Safety Enforcement:</strong> Menghalang kecacatan di mana OS menulis data registry sebagai String yang menyebabkan hardening tidak berkesan.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SLIDE 6 -->
+            <div class="slide" id="slide-5">
+                <div class="slide-title-area">
+                    <span class="slide-tag" id="s6-tag">SLIDE 06</span>
+                    <h2 class="slide-title" id="s6-title">Perbandingan Dengan Alatan Industri Lain</h2>
+                </div>
+                <div class="slide-content">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th id="tbl-h-feature">Kriteria / Ciri</th>
+                                    <th>Tenable Nessus</th>
+                                    <th>CIS-CAT Lite</th>
+                                    <th>Hardentools</th>
+                                    <th style="color: var(--accent-primary);">Snake Tank Suite</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="tbl-r1-feat" style="font-weight: 600;">Kemudahan Mudah Alih (USB)</td>
+                                    <td><span class="badge-table badge-red" id="tbl-v-low">Rendah (Berat)</span></td>
+                                    <td><span class="badge-table badge-orange" id="tbl-v-med">Sederhana (Java)</span></td>
+                                    <td><span class="badge-table badge-green" id="tbl-v-high">Tinggi</span></td>
+                                    <td><span class="badge-table badge-green" style="font-weight: 700;" id="tbl-v-agentless">Tinggi (Sifar Ejen)</span></td>
+                                </tr>
+                                <tr>
+                                    <td id="tbl-r2-feat" style="font-weight: 600;">Keupayaan Membaiki (Fix)</td>
+                                    <td><span class="badge-table badge-red" id="tbl-v-no">Tiada (Laporan Sahaja)</span></td>
+                                    <td><span class="badge-table badge-red" id="tbl-v-no2">Tiada (Laporan Sahaja)</span></td>
+                                    <td><span class="badge-table badge-orange" id="tbl-v-limited">Terhad (Basic)</span></td>
+                                    <td><span class="badge-table badge-green" style="font-weight: 700;" id="tbl-v-rules">Ada (16 Polisi Korporat)</span></td>
+                                </tr>
+                                <tr>
+                                    <td id="tbl-r3-feat" style="font-weight: 600;">Antaramuka Grafik (GUI)</td>
+                                    <td><span class="badge-table badge-orange" id="tbl-v-web">Berasaskan Web</span></td>
+                                    <td><span class="badge-table badge-orange" id="tbl-v-javagui">Java GUI</span></td>
+                                    <td><span class="badge-table badge-red" id="tbl-v-simple">Sangat Ringkas</span></td>
+                                    <td><span class="badge-table badge-green" style="font-weight: 700;" id="tbl-v-wpf">WPF Premium & Interaktif</span></td>
+                                </tr>
+                                <tr>
+                                    <td id="tbl-r4-feat" style="font-weight: 600;">Kos / Lesen</td>
+                                    <td><span class="badge-table badge-red" id="tbl-v-expensive">Sangat Mahal</span></td>
+                                    <td><span class="badge-table badge-orange" id="tbl-v-membership">Had Keahlian</span></td>
+                                    <td><span class="badge-table badge-green" id="tbl-v-free">Percuma</span></td>
+                                    <td><span class="badge-table badge-green" style="font-weight: 700;" id="tbl-v-opensource">Percuma (Open Source)</span></td>
+                                </tr>
+                                <tr>
+                                    <td id="tbl-r5-feat" style="font-weight: 600;">Cek CISA KEV & CVE API</td>
+                                    <td><span class="badge-table badge-orange" id="tbl-v-paid">Ada (Lesen Khas)</span></td>
+                                    <td><span class="badge-table badge-red" id="tbl-v-no3">Tiada</span></td>
+                                    <td><span class="badge-table badge-red" id="tbl-v-no4">Tiada</span></td>
+                                    <td><span class="badge-table badge-green" style="font-weight: 700;" id="tbl-v-liveapi">Ada (Masa Nyata API)</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 7 -->
+            <div class="slide" id="slide-6">
+                <div class="slide-title-area">
+                    <span class="slide-tag" id="s7-tag">SLIDE 07</span>
+                    <h2 class="slide-title" id="s7-title">Aliran Kerja Demonstrasi (Demo Workflow)</h2>
+                </div>
+                <div class="slide-content">
+                    <p id="s7-desc" style="color: var(--text-muted);">Sistem operasi yang lancar bermula dari kebenaran pentadbir sistem sehinggalah proses pengauditan keselamatan selesai sepenuhnya:</p>
+                    
+                    <div class="timeline-steps">
+                        <div class="timeline-step">
+                            <div class="step-num">1</div>
+                            <h4 class="step-title" id="s7-s1-title">Elevasi Admin</h4>
+                            <p class="step-desc" id="s7-s1-desc">Perisian dijalankan sebagai Administrator bagi membenarkan akses penuh baca/tulis Registry.</p>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="step-num">2</div>
+                            <h4 class="step-title" id="s7-s2-title">Imbasan Audit</h4>
+                            <p class="step-desc" id="s7-s2-desc">Menjalankan 24 checks automatik. Mengira % kepatuhan keselamatan semasa pada dashboard.</p>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="step-num">3</div>
+                            <h4 class="step-title" id="s7-s3-title">Analisis Software</h4>
+                            <p class="step-desc" id="s7-s3-desc">Mengimbas aplikasi terpasang komputer dan membandingkan secara terus dengan CISA KEV global.</p>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="step-num">4</div>
+                            <h4 class="step-title" id="s7-s4-title">Smart Hardening</h4>
+                            <p class="step-desc" id="s7-s4-desc">Mengklik butang 'Harden All' untuk membaiki hanya konfigurasi yang bertanda Vulnerable.</p>
+                        </div>
+                        <div class="timeline-step">
+                            <div class="step-num">5</div>
+                            <h4 class="step-title" id="s7-s5-title">Verifikasi Semula</h4>
+                            <p class="step-desc" id="s7-s5-desc">Membuat imbasan semula bagi mengesahkan semua penunjuk keselamatan kini bertukar menjadi Secure.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 8 -->
+            <div class="slide" id="slide-7">
+                <div class="hero-layout">
+                    <div>
+                        <span class="slide-tag" id="s8-tag">SLIDE 08</span>
+                        <h2 class="slide-title" id="s8-title" style="margin-bottom: 1.2rem;">Sumbangan Projek & Merit Akademik</h2>
+                        <ul class="bullet-list">
+                            <li id="s8-l1"><strong>Sumbangan Industri Keselamatan Siber:</strong> Menyediakan peranti pertahanan taktikal (tactical blue-team tool) untuk juruaudit siber menjimatkan jam kerja melakukan penilaian fizikal endpoint.</li>
+                            <li id="s8-l2"><strong>Seni Bina Modular Berkelas:</strong> Sistem direka dengan format kod modular. Boleh dikembangkan (extensible) untuk menambah parameter imbasan baharu pada masa akan datang tanpa merombak enjin GUI utama.</li>
+                            <li id="s8-l3"><strong>Amalan Kejuruteraan Terbaik (Best Practices):</strong> Pembangunan kod bersih berteraskan prinsip kawalan versi Git di bawah cawangan <code style="color: var(--accent-primary);">main</code>, persediaan dokumentasi GitHub lengkap, serta pengaturcaraan berasaskan ujian (test-driven).</li>
+                        </ul>
+                    </div>
+                    <div class="hero-img-container">
+                        <img class="hero-img" src="assets/system_hardening_shield.png" alt="Academic Merit Shield" onerror="this.src='https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80'">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 9 -->
+            <div class="slide" id="slide-8">
+                <div class="slide-title-area" style="text-align: center; margin-bottom: 3rem;">
+                    <span class="badge-cyber" id="s9-badge" style="margin-bottom: 1.5rem;">PENGGULUNGAN PEMBENTANGAN</span>
+                    <h2 class="slide-title" id="s9-title" style="font-size: 3rem; margin-bottom: 1.5rem;">Kesimpulan & Sesi Soal Jawab</h2>
+                    <p id="s9-desc" style="color: var(--text-muted); font-size: 1.2rem; max-width: 800px; margin: 0 auto; line-height: 1.7;">
+                        Snake Tank Security Suite membuktikan bahawa tadbir urus keselamatan komputer Windows gred enterprise boleh dipermudahkan, mesra pengguna, mudah alih, dan dibina secara natif tanpa sebarang kos pelesenan yang tinggi.
+                    </p>
+                </div>
+                
+                <div style="display: flex; justify-content: center; gap: 30px;">
+                    <div style="background: rgba(16, 185, 129, 0.05); border: 1.5px solid rgba(16, 185, 129, 0.3); padding: 1.5rem 3rem; border-radius: 12px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+                        <h3 style="font-family: var(--font-display); font-size: 1.6rem; color: #ffffff; margin-bottom: 5px;" id="s9-thx">Terima Kasih!</h3>
+                        <p style="color: var(--accent-secondary); font-size: 0.95rem; font-weight: 600;" id="s9-thx-sub">Sesi Soal Jawab (Q&A) Dibuka</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Interactive Collapsible Speaker Notes Panel -->
+    <div class="notes-drawer" id="notesDrawer">
+        <div class="notes-header">
+            <div class="notes-title">
+                <span>🎤</span> <span id="notes-title-text">Nota Pembentang (Active Slide)</span>
+            </div>
+            <div class="tips-kbd">
+                <span>Tips: Gunakan kekunci</span> <span class="kbd-key">←</span> <span>atau</span> <span class="kbd-key">→</span> <span>untuk navigasi</span>
+            </div>
+        </div>
+        <div class="notes-content" id="notesContent">
+            Loading speaker notes...
+        </div>
+    </div>
+
+    <!-- Bottom navigation footer -->
+    <footer>
+        <div class="nav-controls">
+            <button class="nav-btn" id="prevBtn" onclick="prevSlide()" disabled>
+                <span>←</span> <span id="btn-lbl-prev">Kembali</span>
+            </button>
+            <span class="slide-counter" id="slideCounter">Slaid 1 dari 9</span>
+            <button class="nav-btn" id="nextBtn" onclick="nextSlide()">
+                <span id="btn-lbl-next">Seterusnya</span> <span>→</span>
+            </button>
+        </div>
+
+        <button class="notes-toggle" onclick="toggleNotes()">
+            <span>📝</span> <span id="notes-btn-text">Buka Nota Pembentang</span>
+        </button>
+    </footer>
+
+    <!-- Presentation Logics -->
+    <script>
+        let currentSlide = 0;
+        const totalSlides = 9;
+        let isEnglish = false;
+        let isNotesOpen = false;
+
+        // Slide Content Data for Dynamic Language Translation
+        const translations = {
+            ms: {
+                sidebar: {
+                    title: "Slaid Pembentangan",
+                    items: [
+                        "1. Tajuk Utama",
+                        "2. Pernyataan Masalah",
+                        "3. Pengenalan Sistem",
+                        "4. Ciri-Ciri Utama",
+                        "5. Seni Bina Teknikal",
+                        "6. Perbandingan Alatan",
+                        "7. Aliran Demonstrasi",
+                        "8. Sumbangan Projek",
+                        "9. Kesimpulan & Q&A"
+                    ]
+                },
+                ui: {
+                    prev: "Kembali",
+                    next: "Seterusnya",
+                    counter: "Slaid {current} dari {total}",
+                    notesOpen: "Buka Nota Pembentang",
+                    notesClose: "Tutup Nota Pembentang",
+                    notesHeader: "Nota Pembentang (Active Slide)",
+                    tips: "Tips: Gunakan kekunci {left} atau {right} untuk navigasi"
+                },
+                slides: [
+                    {
+                        badge: "PROJEK AKHIR TAHUN / ASSIGNMENT",
+                        title: "Snake Tank Security Suite: Alat Pengauditan & Hardening Mudah Alih Gred Enterprise",
+                        desc: "Pembangunan Aplikasi Pengauditan Kerentanan Bersepadu Native PowerShell & WPF untuk Windows Endpoint. 100% Bebas Kebergantungan (Zero-Dependency) & Sedia USB.",
+                        author: "Pembentang:",
+                        major: "Jurusan:",
+                        advisor: "Nama Penyelia:"
+                    },
+                    {
+                        tag: "SLIDE 02",
+                        title: "Pernyataan Masalah (Problem Statement)",
+                        c1Title: "Kerumitan Hardening Windows",
+                        c1Desc: "Proses mengukuhkan sistem (seperti konfigurasi port, registry, dan polisi anonymous SAM/SID) secara manual adalah sangat rumit, leceh, dan terdedah kepada kesilapan konfigurasi.",
+                        c2Title: "Kebergantungan Alatan Luar",
+                        c2Desc: "Scanner industri seperti Nessus/Qualys memerlukan installation server yang berat, lesen yang mahal, runtime khas (seperti Java), serta ejen latar belakang yang mengurangkan prestasi.",
+                        c3Title: "Tiada Ciri Pembaikan Terus (Fix)",
+                        c3Desc: "Hampir keseluruhan scanner keselamatan di pasaran bersifat \"Read-Only\" (Audit). Mereka hanya memberi tahu celah kerentanan tetapi tidak membaikinya secara programmatik."
+                    },
+                    {
+                        tag: "SLIDE 03",
+                        title: "Pengenalan Snake Tank Security Suite",
+                        l1: "<strong>Solusi Dwi-Tindakan Bersepadu:</strong> Menggabungkan keupayaan Pengauditan Keselamatan Sistem (Audit) dan Pengukuhan Aktif (Hardening) dalam satu platform grafik interaktif.",
+                        l2: "<strong>Mudah Alih Sempurna (100% Portable):</strong> Berfungsi sepenuhnya sebagai alatan sifar ejen (agentless) tanpa sebarang pemasangan. Boleh dijalankan terus daripada pemacu USB pada mesin sasaran.",
+                        l3: "<strong>Pembinaan Natif Windows:</strong> Kod sumber berasaskan native <strong>PowerShell 5.1</strong> dan <strong>WPF/XAML</strong>. Ringan, laju, dan menggunakan API terbina bagi meminimumkan amaran dari perisian keselamatan (AV)."
+                    },
+                    {
+                        tag: "SLIDE 04",
+                        title: "Ciri-Ciri Utama & Kehebatan Sistem",
+                        c1Title: "24 Audit Checks & 16 Rules",
+                        c1Desc: "Mengimbas 24 celah kritikal diperkuat dengan 16 remedi hardening automatik. Disertakan dengan **Registry Backup & Rollback Hub** dinamik untuk pemulihan kecemasan satu klik.",
+                        c2Title: "Software & CISA KEV Auditor",
+                        c2Desc: "Memetakan aplikasi terpasang dengan **CISA KEV** secara langsung. Menyokong pencarian **Offline KEV Database** luar talian & **One-Click Software Patching** menggunakan Winget.",
+                        c3Title: "Smart Quarantine & Resizing",
+                        c3Desc: "Threat Detector menyokong kuarantin & pemadaman aktif ancaman startup. Rekabentuk UI premium kini boleh dibesarkan/dikecilkan secara native untuk keselesaan pengguna."
+                    },
+                    {
+                        tag: "SLIDE 05",
+                        title: "Seni Bina Teknikal & Kestabilan Sistem",
+                        desc: "Seni bina native Snake Tank direka bagi memastikan keselamatan, kualiti kod optimum, dan ketepatan operasi pada sistem operasi Windows:",
+                        n1Desc: "Teras grafik responsif tanpa pemproses latar belakang yang berat.",
+                        n2Desc: "Pemprosesan logik, penapis ralat (Try-Catch), dan pengasingan benang (threading).",
+                        n3Desc: "Memaksa ketepatan jenis data REG_DWORD untuk memintas ralat OS.",
+                        n4Desc: "Carian CISA KEV JSON, CIRCL CVE, dan bacaan registry Windows.",
+                        l1: "<strong>Automated Test Harness:</strong> Disertakan skrip ujian unit <code>test_harness.ps1</code> untuk pengesahan automatik gred profesional dengan kadar kejayaan 100%.",
+                        l2: "<strong>Type-Safety Enforcement:</strong> Menghalang kecacatan di mana OS menulis data registry sebagai String yang menyebabkan hardening tidak berkesan."
+                    },
+                    {
+                        tag: "SLIDE 06",
+                        title: "Perbandingan Dengan Alatan Industri Lain",
+                        hFeature: "Kriteria / Ciri",
+                        r1Feat: "Kemudahan Mudah Alih (USB)",
+                        r2Feat: "Keupayaan Membaiki (Fix)",
+                        r3Feat: "Antaramuka Grafik (GUI)",
+                        r4Feat: "Kos / Lesen",
+                        r5Feat: "Cek CISA KEV & CVE API",
+                        vLow: "Rendah (Berat)",
+                        vMed: "Sederhana (Java)",
+                        vHigh: "Tinggi",
+                        vAgentless: "Tinggi (Sifar Ejen)",
+                        vNo: "Tiada (Laporan Sahaja)",
+                        vNo2: "Tiada (Laporan Sahaja)",
+                        vLimited: "Terhad (Basic)",
+                        vRules: "Ada (16 Polisi Korporat)",
+                        vWeb: "Berasaskan Web",
+                        vJava: "Java GUI",
+                        vSimple: "Sangat Ringkas",
+                        vWpf: "WPF Premium & Interaktif",
+                        vExpensive: "Sangat Mahal",
+                        vMembership: "Had Keahlian",
+                        vFree: "Percuma",
+                        vOpensource: "Percuma (Open Source)",
+                        vPaid: "Ada (Lesen Khas)",
+                        vNo3: "Tiada",
+                        vNo4: "Tiada",
+                        vLiveapi: "Ada (Masa Nyata API)"
+                    },
+                    {
+                        tag: "SLIDE 07",
+                        title: "Aliran Kerja Demonstrasi (Demo Workflow)",
+                        desc: "Sistem operasi yang lancar bermula dari kebenaran pentadbir sistem sehinggalah proses pengauditan keselamatan selesai sepenuhnya:",
+                        s1Title: "Elevasi Admin",
+                        s1Desc: "Perisian dijalankan sebagai Administrator bagi membenarkan akses penuh baca/tulis Registry.",
+                        s2Title: "Imbasan Audit",
+                        s2Desc: "Menjalankan 24 checks automatik. Mengira % kepatuhan keselamatan semasa pada dashboard.",
+                        s3Title: "Analisis Software",
+                        s3Desc: "Mengimbas aplikasi terpasang komputer dan membandingkan secara terus dengan CISA KEV global.",
+                        s4Title: "Smart Hardening",
+                        s4Desc: "Mengklik butang 'Harden All' untuk membaiki hanya konfigurasi yang bertanda Vulnerable.",
+                        s5Title: "Verifikasi Semula",
+                        s5Desc: "Membuat imbasan semula bagi mengesahkan semua penunjuk keselamatan kini bertukar menjadi Secure."
+                    },
+                    {
+                        tag: "SLIDE 08",
+                        title: "Sumbangan Projek & Merit Akademik",
+                        l1: "<strong>Sumbangan Industri Keselamatan Siber:</strong> Menyediakan peranti pertahanan taktikal (tactical blue-team tool) untuk juruaudit siber menjimatkan jam kerja melakukan penilaian fizikal endpoint.",
+                        l2: "<strong>Seni Bina Modular Berkelas:</strong> Sistem direka dengan format kod modular. Boleh dikembangkan (extensible) untuk menambah parameter imbasan baharu pada masa akan datang tanpa merombak enjin GUI utama.",
+                        l3: "<strong>Amalan Kejuruteraan Terbaik (Best Practices):</strong> Pembangunan kod bersih berteraskan prinsip kawalan versi Git di bawah cawangan <code>main</code>, persediaan dokumentasi GitHub lengkap, serta pengaturcaraan berasaskan ujian (test-driven)."
+                    },
+                    {
+                        badge: "PENGGULUNGAN PEMBENTANGAN",
+                        title: "Kesimpulan & Sesi Soal Jawab",
+                        desc: "Snake Tank Security Suite membuktikan bahawa tadbir urus keselamatan komputer Windows gred enterprise boleh dipermudahkan, mesra pengguna, mudah alih, dan dibina secara natif tanpa sebarang kos pelesenan yang tinggi.",
+                        thx: "Terima Kasih!",
+                        thxSub: "Sesi Soal Jawab (Q&A) Dibuka"
+                    }
+                ],
+                notes: [
+                    "Selamat sejahtera kepada panel penilai/pensyarah sekalian. Hari ini saya akan membentangkan projek saya yang bertajuk Snake Tank Security Suite. Ini adalah sebuah perisian pengauditan keselamatan dan pengukuhan sistem (system hardening) gred enterprise yang bersifat mudah alih (portable) dan dibina secara natif untuk persekitaran Windows Endpoint.",
+                    "Masalah utama dalam keselamatan Windows hari ini ialah operasi pengukuhan sistem (hardening) sangat rumit dan sering diabaikan. Admin terpaksa mengubah beratus-ratus registry secara manual. Selain itu, alatan komersial sedia ada sangat berat, mahal, dan hanya tahu mencari salah laku sistem (audit sahaja) tanpa menyediakan butang penyelesaian pantas untuk membaikinya secara langsung.",
+                    "Bagi menyelesaikan masalah ini, saya membangunkan Snake Tank Security Suite. Perisian ini bertindak sebagai alat dua-dalam-satu yang mengaudit sistem dan membaiki kerentanan keselamatan secara terus. Kelebihan utamanya ialah ia 100% mudah alih—anda hanya perlu simpan di dalam USB, cucuk pada PC sasaran, dan jalankan. Tiada install, tiada ejen latar belakang, dan tiada kebergantungan luar.",
+                    "Sistem ini dibahagikan kepada beberapa kehebatan utama. Pertama, hab dwi-enjin 24 audit dan 16 polisi hardening, lengkap dengan Registry Backup & Rollback Hub untuk pemulihan satu klik. Kedua, tab pengauditan CVE masa nyata yang menyokong pangkalan data Offline KEV dan One-Click Software Patching menggunakan Winget. Ketiga, Threat Detector menyokong kuarantin fail aktif, manakala antaramuka premium WPF kini boleh di-minimize dan di-maximize secara native.",
+                    "Dari sudut teknikal, perisian ini dibina dengan mementingkan keselamatan dan kestabilan. Saya telah mencipta fungsi pembantu khas untuk memastikan penulisan registry Windows sentiasa berformat REG_DWORD yang sah, kerana jika registry ditulis sebagai string biasa, OS akan mengabaikannya. Selain itu, saya turut membina skrip ujian automatik (test harness) untuk memastikan setiap fungsi diuji secara menyeluruh sebelum digunakan di lapangan.",
+                    "Bila kita bandingkan dengan alatan komersial dunia, Nessus sememangnya sangat terkenal untuk pengauditan tetapi ia tidak mampu membaiki dan harganya amat mahal. Manakala CIS-CAT Lite memerlukan Java runtime yang tidak praktikal untuk kerja mudah alih. Hardentools pula terlalu ringkas tanpa laporan terperinci. Di sinilah Snake Tank mengisi jurang tersebut dengan menawarkan penyelesaian sifar-ejen, lengkap dengan fungsi pembaikan automatik, integrasi CVE masa nyata, dan percuma!",
+                    "Kini saya akan menunjukkan demo ringkas aliran kerja sistem. Pengguna mulakan dengan hak Administrator, klik 'Start Scan', dan dalam beberapa saat peratusan keselamatan semasa akan dikira. Seterusnya, kita boleh mengaudit perisian tempatan untuk mengesan celah ancaman CISA KEV. Akhir sekali, kita hanya perlu menekan 'Harden All' untuk membaiki semua kelemahan tersebut dengan serta-merta dan menukar status sistem menjadi Secure sepenuhnya.",
+                    "Sebagai kesimpulan nilai akademik dan industri, projek ini bukan sahaja membantu pentadbir sistem menjimatkan masa dalam mengukuhkan keselamatan endpoint Windows, malah ia membuktikan amalan pembangunan perisian yang cemerlang. Dengan struktur kod modular, pembangun masa depan boleh menambah polisi keselamatan baharu dengan mudah tanpa mengubah suai enjin teras sistem.",
+                    "Sebagai penutup, saya berharap projek ini menunjukkan bahawa kawalan keselamatan yang ketat tidak semestinya menyusahkan untuk diaplikasikan. Dengan Snake Tank, sesiapa sahaja mampu mengaudit dan mengukuhkan Windows dengan cepat dan selamat. Terima kasih saya ucapkan kepada barisan pensyarah. Sesi soal jawab kini dibuka untuk sebarang soalan atau maklum balas."
+                ]
+            },
+            en: {
+                sidebar: {
+                    title: "Presentation Slides",
+                    items: [
+                        "1. Title & Introduction",
+                        "2. Problem Statement",
+                        "3. Introduction to Suite",
+                        "4. Key Features",
+                        "5. Technical Architecture",
+                        "6. Existing Tool Comparison",
+                        "7. System Workflow Demo",
+                        "8. Academic Contribution",
+                        "9. Conclusion & Q&A"
+                    ]
+                },
+                ui: {
+                    prev: "Back",
+                    next: "Next",
+                    counter: "Slide {current} of {total}",
+                    notesOpen: "Show Speaker Notes",
+                    notesClose: "Hide Speaker Notes",
+                    notesHeader: "Speaker Notes (Active Slide)",
+                    tips: "Tips: Use {left} or {right} arrow keys to navigate"
+                },
+                slides: [
+                    {
+                        badge: "FINAL YEAR PROJECT / ASSIGNMENT",
+                        title: "Snake Tank Security Suite: Enterprise-Grade Portable Windows Auditing & System Hardening Suite",
+                        desc: "An Interactive Native PowerShell & WPF-Based Vulnerability Assessment and Remediation Tool for Windows Endpoints. 100% Zero-Dependency & USB-Ready.",
+                        author: "Presenter:",
+                        major: "Major / Course:",
+                        advisor: "Advisor / Supervisor:"
+                    },
+                    {
+                        tag: "SLIDE 02",
+                        title: "Problem Statement",
+                        c1Title: "Complexity of Security Hardening",
+                        c1Desc: "The process of manually hardening operating systems (such as ports, registry configurations, and anonymous SAM/SID controls) is tedious, complex, and prone to misconfiguration.",
+                        c2Title: "Heavy Third-Party Dependencies",
+                        c2Desc: "Enterprise scanners like Nessus or Qualys require massive server environments, expensive licenses, heavy local runtimes (like Java), and background agents that eat performance.",
+                        c3Title: "No Direct Remediation",
+                        c3Desc: "Nearly all security scanners in the market are 'Read-Only' (Audit-only). They identify and report critical gaps but fail to provide automated programmatic fixes."
+                    },
+                    {
+                        tag: "SLIDE 03",
+                        title: "Introduction to Snake Tank Security Suite",
+                        l1: "<strong>Integrated Dual-Action Solution:</strong> Unifies deep system security auditing and active configuration hardening into a single, interactive graphical dashboard.",
+                        l2: "<strong>Absolute Portability (100% Portable):</strong> Fully functional as an agentless utility requiring zero software installations. Runs directly off a USB drive on all target client systems.",
+                        l3: "<strong>Native Windows Development:</strong> Programmed entirely in native <strong>PowerShell 5.1</strong> and <strong>WPF/XAML</strong>. Ultra-lightweight, rapid, and relies on built-in OS APIs to avoid security blocks (AV)."
+                    },
+                    {
+                        tag: "SLIDE 04",
+                        title: "Key Features & System Strengths",
+                        c1Title: "24 Audit Checks & 16 Rules",
+                        c1Desc: "Audits 24 critical system vectors armed with 16 automated registry hardening rules. Features a dynamic **Registry Backup & Rollback Hub** for one-click emergency restores.",
+                        c2Title: "Software & CISA KEV Auditor",
+                        c2Desc: "Correlates local applications with the live **CISA KEV** catalog. Supports **Offline KEV Database** scans and **One-Click Software Patching** via silent Winget jobs.",
+                        c3Title: "Smart Quarantine & Resizing",
+                        c3Desc: "The Threat Detector supports active quarantine/deletion of startup interpreter vectors. The premium UI window is natively resizable (min/max) for user comfort."
+                    },
+                    {
+                        tag: "SLIDE 05",
+                        title: "Technical Architecture & System Stability",
+                        desc: "Snake Tank's native architecture is engineered to guarantee safety, optimal code quality, and exact operational accuracy on Windows endpoints:",
+                        n1Desc: "Responsive graphical interface without demanding massive background processes.",
+                        n2Desc: "Handles system processing, error catching (Try-Catch), and thread separation.",
+                        n3Desc: "Enforces exact REG_DWORD registry type-safety to prevent OS configuration errors.",
+                        n4Desc: "Consumes CISA KEV JSON data, CIRCL CVE queries, and reads Windows registries.",
+                        l1: "<strong>Automated Test Harness:</strong> Supported by a professional-grade unit test script <code>test_harness.ps1</code> delivering a verified 100% execution pass rate.",
+                        l2: "<strong>Type-Safety Enforcement:</strong> Prevents critical defects where the OS records registry edits as strings, rendering security configurations ignored."
+                    },
+                    {
+                        tag: "SLIDE 06",
+                        title: "Comparison with Existing Industry Tools",
+                        hFeature: "Criteria / Features",
+                        r1Feat: "Portability (USB Ready)",
+                        r2Feat: "Remediation Capable",
+                        r3Feat: "User Interface (GUI)",
+                        r4Feat: "Licensing / Cost",
+                        r5Feat: "CISA KEV & CVE API Check",
+                        vLow: "Low (Heavy Server)",
+                        vMed: "Medium (Java Required)",
+                        vHigh: "High",
+                        vAgentless: "High (Zero-Agent)",
+                        vNo: "No (Assessment Only)",
+                        vNo2: "No (Assessment Only)",
+                        vLimited: "Limited (Basic)",
+                        vRules: "Yes (16 Core Policies)",
+                        vWeb: "Web-based Console",
+                        vJava: "Java GUI Layout",
+                        vSimple: "Extremely Basic",
+                        vWpf: "WPF Premium Dashboard",
+                        vExpensive: "Very Expensive",
+                        vMembership: "Membership Limits",
+                        vFree: "Free",
+                        vOpensource: "Free (Open Source)",
+                        vPaid: "Yes (Paid Tiers Only)",
+                        vNo3: "No",
+                        vNo4: "No",
+                        vLiveapi: "Yes (Real-Time API)"
+                    },
+                    {
+                        tag: "SLIDE 07",
+                        title: "System Workflow & Live Demonstration",
+                        desc: "A seamless pipeline from administrative privilege elevation to complete system compliance auditing:",
+                        s1Title: "Admin Elevation",
+                        s1Desc: "Suite is executed with Administrator privileges to allow complete Registry read and write permissions.",
+                        s2Title: "Vulnerability Scan",
+                        s2Desc: "Executes 24 automated checks, calculating real-time endpoint security compliance (%) on the dashboard.",
+                        s3Title: "Software Audit",
+                        s3Desc: "Scans installed local applications and maps them against active threats in the global CISA KEV list.",
+                        s4Title: "Smart Hardening",
+                        s4Desc: "Triggers the 'Harden All' script to safely correct only configurations identified as Vulnerable.",
+                        s5Title: "Verify & Clean",
+                        s5Desc: "Re-scans the host endpoint to verify all compliance indicators have updated to a secure state."
+                    },
+                    {
+                        tag: "SLIDE 08",
+                        title: "Contribution & Academic Merit",
+                        l1: "<strong>Cybersecurity Industry Contribution:</strong> Provides security auditors and blue teams with a lightweight, tactical endpoint assessment tool that slashes physical auditing time.",
+                        l2: "<strong>Elegant Modular Design:</strong> Engineered with a highly modular code structure. Developers can easily register new security parameters without modifying the core GUI framework.",
+                        l3: "<strong>Engineering Best Practices:</strong> Clean code built with strict Git version control on the <code>main</code> branch, complete GitHub documentation, and unit-tested reliability."
+                    },
+                    {
+                        badge: "PRESENTATION WRAP-UP",
+                        title: "Conclusion & Q&A Session",
+                        desc: "Snake Tank Security Suite proves that enterprise-grade cybersecurity governance and Windows endpoint hardening can be lightweight, user-friendly, portable, and built natively with zero licensing costs.",
+                        thx: "Thank You!",
+                        thxSub: "Q&A Session is Now Open"
+                    }
+                ],
+                notes: [
+                    "Good day to the members of the evaluation panel. Today, I am proud to present my project, the Snake Tank Security Suite. This is a highly portable, enterprise-grade security auditing and active systems hardening utility designed natively for Windows endpoints.",
+                    "The problem we face today is that hardening a Windows operating system is notoriously complex. Administrators have to navigate hundreds of nested Group Policies or Registry keys manually. Moreover, existing tools are heavy, expensive, and act only as passive advisory systems—telling you what is broken but leaving you to fix it yourself.",
+                    "To solve these pain points, I developed the Snake Tank Security Suite. It is an interactive, double-action utility that audits the host and fixes vulnerabilities on the fly. It is completely portable, requiring zero dependencies or installation. You can load it onto a USB drive, plug it into a target client machine, and secure the endpoint immediately.",
+                    "Snake Tank boasts massive upgrades. First, a dual-engine architecture of 24 audits and 16 hardening rules, backed by a Registry Backup & Rollback Hub for one-click recovery. Second, a CVE search engine supporting Offline KEV Database scans and One-Click Software Patching via silent Winget jobs. Third, a Threat Detector with active quarantine controls, all running in a premium resizable WPF window supporting native minimize and maximize actions.",
+                    "From a technical standpoint, the tool prioritizes OS safety and robust code quality. A notable engineering highlight is the Set-RegistryDword helper function, which recursively builds missing registry parent keys and guarantees strict DWORD formatting. Additionally, the project is backed by an automated test harness to programmatically assert the integrity of all scanning and auditing routines.",
+                    "When compared to other security products, commercial giants like Tenable Nessus are excellent for enterprise scanning but lack immediate remediation features and cost thousands of dollars. CIS-CAT Lite requires a heavy Java runtime which is impractical for quick field audits. Hardentools is extremely basic. Snake Tank bridges this gap by being portable, offering direct hardening, live CVE mapping, and premium styling completely for free.",
+                    "I will now present a demonstration of our workflow. Once launched as an administrator, the auditor computes our compliance baseline in a few seconds. We can then inspect local software vulnerabilities using the CIRCL CVE lookup. Finally, triggering 'Harden All' automatically applies the security updates, turning our vulnerability indicators green and ensuring complete endpoint compliance.",
+                    "The academic and industrial merit of this project lies in its utility and structured engineering. It serves as a rapid defense asset for security teams, saving hours of manual security configuration. The architecture is modular and highly extensible, allowing future developers to easily register new security parameters as operating systems and security standards evolve.",
+                    "To conclude, Snake Tank proves that robust endpoint security doesn't have to be heavy or expensive. With this toolkit, any system administrator can secure their endpoints instantly and reliably. Thank you for your time, and I am now ready to receive any questions or feedback from the panel."
+                ]
+            }
+        };
+
+        // Function to Toggle Languages (Bahasa Melayu vs English)
+        function toggleLanguage() {
+            isEnglish = !isEnglish;
+            const bodyClass = document.body.classList;
+            
+            if (isEnglish) {
+                document.getElementById("langSwitch").classList.add("lang-en-active");
+                document.getElementById("btn-ms").classList.remove("active");
+                document.getElementById("btn-en").classList.add("active");
+            } else {
+                document.getElementById("langSwitch").classList.remove("lang-en-active");
+                document.getElementById("btn-ms").classList.add("active");
+                document.getElementById("btn-en").classList.remove("active");
+            }
+
+            renderLanguage();
+        }
+
+        // Perform DOM manipulation to update texts dynamically
+        function renderLanguage() {
+            const data = isEnglish ? translations.en : translations.ms;
+
+            // Update Sidebar Index items
+            document.getElementById("idx-sidebar-title").innerText = data.sidebar.title;
+            const idxButtons = document.querySelectorAll(".index-item");
+            idxButtons.forEach((btn, idx) => {
+                btn.innerText = data.sidebar.items[idx];
+            });
+
+            // Update Footer UI Controls
+            document.getElementById("btn-lbl-prev").innerText = data.ui.prev;
+            document.getElementById("btn-lbl-next").innerText = data.ui.next;
+            document.getElementById("notes-title-text").innerText = data.ui.notesHeader;
+            
+            const kbdTips = document.querySelector(".tips-kbd");
+            if (isEnglish) {
+                kbdTips.innerHTML = '<span>Tips: Use</span> <span class="kbd-key">←</span> <span>or</span> <span class="kbd-key">→</span> <span>arrow keys to navigate</span>';
+                document.getElementById("notes-btn-text").innerText = isNotesOpen ? data.ui.notesClose : data.ui.notesOpen;
+            } else {
+                kbdTips.innerHTML = '<span>Tips: Gunakan kekunci</span> <span class="kbd-key">←</span> <span>atau</span> <span class="kbd-key">→</span> <span>untuk navigasi</span>';
+                document.getElementById("notes-btn-text").innerText = isNotesOpen ? data.ui.notesClose : data.ui.notesOpen;
+            }
+
+            // Update Slide 1 Content
+            document.getElementById("s1-badge").innerText = data.slides[0].badge;
+            document.getElementById("s1-title").innerText = data.slides[0].title;
+            document.getElementById("s1-desc").innerText = data.slides[0].desc;
+            document.getElementById("s1-author-lbl").innerText = data.slides[0].author;
+            document.getElementById("s1-major-lbl").innerText = data.slides[0].major;
+            document.getElementById("s1-advisor-lbl").innerText = data.slides[0].advisor;
+
+            // Update Slide 2 Content
+            document.getElementById("s2-tag").innerText = data.slides[1].tag;
+            document.getElementById("s2-title").innerText = data.slides[1].title;
+            document.getElementById("s2-c1-title").innerText = data.slides[1].c1Title;
+            document.getElementById("s2-c1-desc").innerText = data.slides[1].c1Desc;
+            document.getElementById("s2-c2-title").innerText = data.slides[1].c2Title;
+            document.getElementById("s2-c2-desc").innerText = data.slides[1].c2Desc;
+            document.getElementById("s2-c3-title").innerText = data.slides[1].c3Title;
+            document.getElementById("s2-c3-desc").innerText = data.slides[1].c3Desc;
+
+            // Update Slide 3 Content
+            document.getElementById("s3-tag").innerText = data.slides[2].tag;
+            document.getElementById("s3-title").innerText = data.slides[2].title;
+            document.getElementById("s3-l1").innerHTML = data.slides[2].l1;
+            document.getElementById("s3-l2").innerHTML = data.slides[2].l2;
+            document.getElementById("s3-l3").innerHTML = data.slides[2].l3;
+
+            // Update Slide 4 Content
+            document.getElementById("s4-tag").innerText = data.slides[3].tag;
+            document.getElementById("s4-title").innerText = data.slides[3].title;
+            document.getElementById("s4-c1-title").innerText = data.slides[3].c1Title;
+            document.getElementById("s4-c1-desc").innerText = data.slides[3].c1Desc;
+            document.getElementById("s4-c2-title").innerText = data.slides[3].c2Title;
+            document.getElementById("s4-c2-desc").innerText = data.slides[3].c2Desc;
+            document.getElementById("s4-c3-title").innerText = data.slides[3].c3Title;
+            document.getElementById("s4-c3-desc").innerText = data.slides[3].c3Desc;
+
+            // Update Slide 5 Content
+            document.getElementById("s5-tag").innerText = data.slides[4].tag;
+            document.getElementById("s5-title").innerText = data.slides[4].title;
+            document.getElementById("s5-desc").innerText = data.slides[4].desc;
+            document.getElementById("s5-n1-desc").innerText = data.slides[4].n1Desc;
+            document.getElementById("s5-n2-desc").innerText = data.slides[4].n2Desc;
+            document.getElementById("s5-n3-desc").innerText = data.slides[4].n3Desc;
+            document.getElementById("s5-n4-desc").innerText = data.slides[4].n4Desc;
+            document.getElementById("s5-l1").innerHTML = data.slides[4].l1;
+            document.getElementById("s5-l2").innerHTML = data.slides[4].l2;
+
+            // Update Slide 6 Content
+            document.getElementById("s6-tag").innerText = data.slides[5].tag;
+            document.getElementById("s6-title").innerText = data.slides[5].title;
+            document.getElementById("tbl-h-feature").innerText = data.slides[5].hFeature;
+            document.getElementById("tbl-r1-feat").innerText = data.slides[5].r1Feat;
+            document.getElementById("tbl-r2-feat").innerText = data.slides[5].r2Feat;
+            document.getElementById("tbl-r3-feat").innerText = data.slides[5].r3Feat;
+            document.getElementById("tbl-r4-feat").innerText = data.slides[5].r4Feat;
+            document.getElementById("tbl-r5-feat").innerText = data.slides[5].r5Feat;
+            document.getElementById("tbl-v-low").innerText = data.slides[5].vLow;
+            document.getElementById("tbl-v-med").innerText = data.slides[5].vMed;
+            document.getElementById("tbl-v-high").innerText = data.slides[5].vHigh;
+            document.getElementById("tbl-v-agentless").innerText = data.slides[5].vAgentless;
+            document.getElementById("tbl-v-no").innerText = data.slides[5].vNo;
+            document.getElementById("tbl-v-no2").innerText = data.slides[5].vNo2;
+            document.getElementById("tbl-v-limited").innerText = data.slides[5].vLimited;
+            document.getElementById("tbl-v-rules").innerText = data.slides[5].vRules;
+            document.getElementById("tbl-v-web").innerText = data.slides[5].vWeb;
+            document.getElementById("tbl-v-javagui").innerText = data.slides[5].vJava;
+            document.getElementById("tbl-v-simple").innerText = data.slides[5].vSimple;
+            document.getElementById("tbl-v-wpf").innerText = data.slides[5].vWpf;
+            document.getElementById("tbl-v-expensive").innerText = data.slides[5].vExpensive;
+            document.getElementById("tbl-v-membership").innerText = data.slides[5].vMembership;
+            document.getElementById("tbl-v-free").innerText = data.slides[5].vFree;
+            document.getElementById("tbl-v-opensource").innerText = data.slides[5].vOpensource;
+            document.getElementById("tbl-v-paid").innerText = data.slides[5].vPaid;
+            document.getElementById("tbl-v-no3").innerText = data.slides[5].vNo3;
+            document.getElementById("tbl-v-no4").innerText = data.slides[5].vNo4;
+            document.getElementById("tbl-v-liveapi").innerText = data.slides[5].vLiveapi;
+
+            // Update Slide 7 Content
+            document.getElementById("s7-tag").innerText = data.slides[6].tag;
+            document.getElementById("s7-title").innerText = data.slides[6].title;
+            document.getElementById("s7-desc").innerText = data.slides[6].desc;
+            document.getElementById("s7-s1-title").innerText = data.slides[6].s1Title;
+            document.getElementById("s7-s1-desc").innerText = data.slides[6].s1Desc;
+            document.getElementById("s7-s2-title").innerText = data.slides[6].s2Title;
+            document.getElementById("s7-s2-desc").innerText = data.slides[6].s2Desc;
+            document.getElementById("s7-s3-title").innerText = data.slides[6].s3Title;
+            document.getElementById("s7-s3-desc").innerText = data.slides[6].s3Desc;
+            document.getElementById("s7-s4-title").innerText = data.slides[6].s4Title;
+            document.getElementById("s7-s4-desc").innerText = data.slides[6].s4Desc;
+            document.getElementById("s7-s5-title").innerText = data.slides[6].s5Title;
+            document.getElementById("s7-s5-desc").innerText = data.slides[6].s5Desc;
+
+            // Update Slide 8 Content
+            document.getElementById("s8-tag").innerText = data.slides[7].tag;
+            document.getElementById("s8-title").innerText = data.slides[7].title;
+            document.getElementById("s8-l1").innerHTML = data.slides[7].l1;
+            document.getElementById("s8-l2").innerHTML = data.slides[7].l2;
+            document.getElementById("s8-l3").innerHTML = data.slides[7].l3;
+
+            // Update Slide 9 Content
+            document.getElementById("s9-badge").innerText = data.slides[8].badge;
+            document.getElementById("s9-title").innerText = data.slides[8].title;
+            document.getElementById("s9-desc").innerText = data.slides[8].desc;
+            document.getElementById("s9-thx").innerText = data.slides[8].thx;
+            document.getElementById("s9-thx-sub").innerText = data.slides[8].thxSub;
+
+            // Update Active Speaker Notes & Counter
+            updateCounter();
+            updateSpeakerNotes();
+        }
+
+        // Slideshow controls: Next Slide
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                goToSlide(currentSlide + 1);
+            }
+        }
+
+        // Slideshow controls: Previous Slide
+        function prevSlide() {
+            if (currentSlide > 0) {
+                goToSlide(currentSlide - 1);
+            }
+        }
+
+        // Direct Navigation to specific slides
+        function goToSlide(slideIndex) {
+            const previousSlide = currentSlide;
+            
+            // Remove active classes
+            document.getElementById(`slide-${previousSlide}`).classList.remove("active");
+            document.querySelector(`.index-item[data-slide="${previousSlide}"]`).classList.remove("active");
+
+            // Set current
+            currentSlide = slideIndex;
+            
+            // Apply transitions
+            const nextSlideEl = document.getElementById(`slide-${currentSlide}`);
+            nextSlideEl.classList.add("active");
+            document.querySelector(`.index-item[data-slide="${currentSlide}"]`).classList.add("active");
+
+            // Update navigation button disabled states
+            document.getElementById("prevBtn").disabled = (currentSlide === 0);
+            document.getElementById("nextBtn").disabled = (currentSlide === totalSlides - 1);
+
+            updateCounter();
+            updateSpeakerNotes();
+        }
+
+        // Update Counter Text (e.g. Slaid 1 dari 9)
+        function updateCounter() {
+            const data = isEnglish ? translations.en : translations.ms;
+            let counterStr = data.ui.counter.replace("{current}", currentSlide + 1).replace("{total}", totalSlides);
+            document.getElementById("slideCounter").innerText = counterStr;
+        }
+
+        // Toggle Speaker Notes Panel
+        function toggleNotes() {
+            isNotesOpen = !isNotesOpen;
+            const drawer = document.getElementById("notesDrawer");
+            const btnText = document.getElementById("notes-btn-text");
+            const data = isEnglish ? translations.en : translations.ms;
+
+            if (isNotesOpen) {
+                drawer.classList.add("open");
+                btnText.innerText = data.ui.notesClose;
+            } else {
+                drawer.classList.remove("open");
+                btnText.innerText = data.ui.notesOpen;
+            }
+        }
+
+        // Update notes content depending on selected language and slide
+        function updateSpeakerNotes() {
+            const data = isEnglish ? translations.en : translations.ms;
+            document.getElementById("notesContent").innerText = `"${data.notes[currentSlide]}"`;
+        }
+
+        // Keyboard Arrow Keys Navigation
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "ArrowRight") {
+                nextSlide();
+            } else if (event.key === "ArrowLeft") {
+                prevSlide();
+            }
+        });
+
+        // Initialize presentation defaults
+        window.onload = function() {
+            renderLanguage();
+        }
+    </script>
+</body>
+</html>

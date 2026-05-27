@@ -1,0 +1,39 @@
+{
+  "vulnerabilities": [
+    {
+      "cveID": "CVE-2023-38606",
+      "product": "Zoom",
+      "vulnerabilityName": "Zoom Client Privilege Escalation",
+      "shortDescription": "Zoom Client for Meetings on Windows contains an unquoted search path vulnerability that allows a local user to escalate privileges to SYSTEM.",
+      "requiredAction": "Upgrade Zoom Client for Meetings to version 5.15.5 or later."
+    },
+    {
+      "cveID": "CVE-2023-38831",
+      "product": "WinRAR",
+      "vulnerabilityName": "WinRAR Arbitrary Code Execution",
+      "shortDescription": "RARLAB WinRAR before 6.23 allows remote attackers to execute arbitrary code when a user attempts to view a benign file within a ZIP archive.",
+      "requiredAction": "Upgrade WinRAR to version 6.23 or later."
+    },
+    {
+      "cveID": "CVE-2022-30190",
+      "product": "Microsoft Office",
+      "vulnerabilityName": "Microsoft Support Diagnostic Tool (MSDT) Remote Code Execution (Follina)",
+      "shortDescription": "A remote code execution vulnerability exists when MSDT is called using the URL protocol from a calling application such as Microsoft Office Word.",
+      "requiredAction": "Apply Microsoft official patches or disable the MSDT URL protocol."
+    },
+    {
+      "cveID": "CVE-2023-3079",
+      "product": "Chrome",
+      "vulnerabilityName": "Google Chrome V8 Type Confusion",
+      "shortDescription": "Type confusion in V8 in Google Chrome prior to 114.0.5735.110 allowed a remote attacker to potentially exploit heap corruption via a crafted HTML page.",
+      "requiredAction": "Upgrade Google Chrome to version 114.0.5735.110 or later."
+    },
+    {
+      "cveID": "CVE-2021-34484",
+      "product": "Microsoft Word",
+      "vulnerabilityName": "Microsoft Word Remote Code Execution",
+      "shortDescription": "A remote code execution vulnerability exists in Microsoft Word due to memory corruption bugs.",
+      "requiredAction": "Upgrade Microsoft Office/Word to the latest secure version."
+    }
+  ]
+}

@@ -1,213 +1,416 @@
-# 🛡️ Snake Tank Security Suite (Portable Edition)
+<p align="center">
+  <img src="assets/banner.png" alt="Snake Tank Security Toolkit Banner" width="100%" />
+</p>
 
-<div align="center">
+<h1 align="center">🐍 Snake Tank Portable Security Toolkit</h1>
+
+<p align="center">
+  <strong>A zero-dependency, 100% portable Windows security auditing & hardening suite.</strong>
+</p>
+
+<p align="center">
+  <a href="#-features"><img src="https://img.shields.io/badge/Modules-7%20Security%20Modules-10B981?style=for-the-badge&logo=shield&logoColor=white" alt="Modules" /></a>
+  <a href="#-quick-start"><img src="https://img.shields.io/badge/Setup-Zero%20Install-3B82F6?style=for-the-badge&logo=windows&logoColor=white" alt="Zero Install" /></a>
+  <a href="#-license"><img src="https://img.shields.io/badge/License-MIT-8B5CF6?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License" /></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/PowerShell-5.1+-blue?style=flat-square&logo=powershell&logoColor=white" alt="PowerShell 5.1+" />
+  <img src="https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-0078D6?style=flat-square&logo=windows11&logoColor=white" alt="Windows 10 | 11" />
+  <img src="https://img.shields.io/badge/GUI-WPF%20Native-purple?style=flat-square&logo=dotnet&logoColor=white" alt="WPF Native" />
+  <img src="https://img.shields.io/badge/Dependencies-None-success?style=flat-square" alt="No Dependencies" />
+  <img src="https://img.shields.io/badge/Portable-USB%20Ready-orange?style=flat-square&logo=usb&logoColor=white" alt="USB Ready" />
+</p>
+
+---
+
+<p align="center">
+  <img src="assets/screenshot_dashboard.png" alt="Dashboard Preview" width="85%" />
+</p>
+
+---
+
+## 📋 Table of Contents
+
+- [About](#-about)
+- [Features](#-features)
+- [Quick Start](#-quick-start)
+- [Architecture](#%EF%B8%8F-architecture)
+- [Modules](#-modules-deep-dive)
+- [System Requirements](#-system-requirements)
+- [Project Structure](#-project-structure)
+- [Testing](#-testing)
+- [Contributing](#-contributing)
+- [Disclaimer](#%EF%B8%8F-disclaimer)
+- [License](#-license)
+
+---
+
+## 🐍 About
+
+**Snake Tank Portable Security Toolkit** is a self-contained, zero-dependency Windows security auditing and hardening suite built entirely in native PowerShell with a modern WPF (Windows Presentation Foundation) GUI.
+
+Designed for **penetration testers**, **blue team operators**, **sysadmins**, and **security enthusiasts** — simply copy the folder to a USB drive, plug into any Windows machine, and instantly audit, scan, and harden the host system. No installation. No internet. No excuses.
+
+### Why Snake Tank?
+
+| Traditional Tools | Snake Tank |
+|:---|:---|
+| ❌ Requires Python, .NET SDK, or npm | ✅ Zero dependencies — PowerShell only |
+| ❌ Needs internet to install packages | ✅ 100% offline & air-gapped ready |
+| ❌ Complex setup & configuration | ✅ Double-click `.bat` and go |
+| ❌ CLI-only interface | ✅ Beautiful modern dark-theme GUI |
+| ❌ Scattered tools for different tasks | ✅ All-in-one unified security suite |
+
+---
+
+## ✨ Features
+
+<table>
+<tr>
+<td width="50%">
+
+### 🛡️ Security Auditing
+- 24-point comprehensive vulnerability scan
+- CVSS severity scoring (Critical → Info)
+- Real-time security score calculation
+- Automated letter grade assessment (A-F)
+- Hardening compliance percentage tracking
+
+</td>
+<td width="50%">
+
+### 🔧 One-Click Hardening
+- SMBv1 protocol deprecation
+- Firewall profile enforcement
+- Windows Defender activation
+- RDP NLA enforcement
+- Print Spooler & Remote Registry control
+- Registry-level security policies
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🔍 Threat Detection
+- Windows Defender active threat scan
+- Heuristic file analysis engine
+- Startup persistence anomaly detection
+- Suspicious script interpreter flagging
+- Obfuscated payload pattern matching
+
+</td>
+<td width="50%">
+
+### 🖥️ OS Deep Auditor
+- 10-phase deep Windows OS inspection
+- Hardware topology extraction (CPU, RAM, GPU)
+- Active driver & service enumeration
+- CVE/CVSS vulnerability cross-referencing
+- OS Strength Score with live dashboard
+- One-click OS hardening buttons
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### 🌐 CVE Intelligence
+- Real-time CVE search by keyword or ID
+- Local software inventory audit
+- Known vulnerability cross-referencing
+- CVSS score tagging & severity mapping
+
+</td>
+<td width="50%">
+
+### 📊 Reporting & Export
+- Beautiful standalone HTML security reports
+- Severity breakdown with visual charts
+- Copyable manual remediation commands
+- Real-time diagnostic log terminal
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: Double-Click Launch (Recommended)
 
 ```
-   _____             _             _______              _     
-  / ____|           | |           |__   __|            | |    
- | (___  _ __   __ _| | _____  ___   | | __ _ _ __  ___| | __ 
-  \___ \| '_ \ / _` | |/ / _ \/ __|  | |/ _` | '_ \/ __| |/ / 
-  ____) | | | | (_| |   <  __/\__ \  | | (_| | | | \__ \   <  
- |_____/|_| |_|\__,_|_|\_\___||___/  |_|\__,_|_| |_|___/_|\_\ 
+📁 Portable_Toolkit/
+   └── 🖱️ Start_Snake_Tank.bat    ← Double-click this!
 ```
 
-**An elite, native Windows endpoint auditing, active threat hunting, and one-click system hardening suite.**
+> The `.bat` launcher automatically requests Administrator elevation via UAC.
 
-[![PowerShell Support](https://img.shields.io/badge/PowerShell-5.1%20%7C%207.x-blue?style=for-the-badge&logo=powershell&logoColor=white)](https://microsoft.com/powershell)
-[![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011%20%7C%20Server-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://microsoft.com/windows)
-[![Execution Safety](https://img.shields.io/badge/Status-100%25%20Verified%20Harness-success?style=for-the-badge&logo=checkmarx&logoColor=white)](#🧪-automated-integrity-self-test)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=for-the-badge)](https://github.com/)
+### Option 2: PowerShell Launch
 
-</div>
+```powershell
+# Navigate to the toolkit directory
+cd "C:\Path\To\Portable_Toolkit"
 
----
+# Launch with execution policy bypass
+powershell -NoProfile -ExecutionPolicy Bypass -File .\core\engine.ps1
+```
 
-## 📖 Table of Contents
-1. [Introduction](#-introduction)
-2. [🌟 Key Features](#-key-features)
-3. [📂 File Architecture](#-file-architecture)
-4. [🔍 24-Audit Checking Matrix](#-24-audit-checking-matrix)
-5. [🛡️ 16-Rule System Hardening Baseline](#-16-rule-system-hardening-baseline)
-6. [🚀 How to Run](#-how-to-run)
-   - [Option A: Standard GUI Startup (Double-Click)](#option-a-standard-gui-startup-double-click)
-   - [Option B: Terminal / CLI Startup (PowerShell & CMD)](#option-b-terminal--cli-startup-command-prompt-or-powershell)
-7. [🧪 Automated Integrity Self-Test](#-automated-integrity-self-test)
-8. [📜 License](#-license)
+### Option 3: Direct Tab Launch
 
----
+```powershell
+# Launch directly to Vulnerability Scanner
+powershell -ExecutionPolicy Bypass -File .\core\engine.ps1 -Tab "Scanner"
 
-## ⚡ Introduction
+# Launch directly to System Hardening
+powershell -ExecutionPolicy Bypass -File .\core\engine.ps1 -Tab "Hardening"
 
-**Snake Tank Security Suite** is a **100% portable, zero-dependency, local security assessment and operating system hardening suite** engineered specifically for security auditors, sysadmins, and incident responders. 
+# Launch directly to OS Deep Auditor
+powershell -ExecutionPolicy Bypass -File .\core\engine.ps1 -Tab "OS"
+```
 
-Unlike heavy enterprise scanning suites that require massive databases, proprietary clients, or complex runtimes, Snake Tank is built entirely using **native Windows PowerShell and WPF XAML**. This ensures a true, lightning-fast **plug-and-play** experience directly from a secure locally copied folder or USB drive, without introducing any external software footprints on targeted assets.
+### Shortcut Launchers
 
----
-
-## 🌟 Key Features
-
-* **Glassmorphism Dark-Emerald UI**: Sleek, immersive developer console styling featuring dynamic tab navigation, custom progress widgets, and live terminal event feeds.
-* **WMI/CIM Hardware Profiler**: Auto-detects and displays core host hardware specifications (CPU, RAM size, Motherboard product, GPU, and Wi-Fi adapter) with responsive ellipsis-trimming and hover tooltips.
-* **Vulnerability Scanner (24 Vectors)**: Audits the system's security architecture across **24 critical vectors** in seconds, compiling detailed findings, evidence strings, and copyable manual CLI remediation commands.
-* **Intelligent Hardening Hub (16 Policies)**:
-  - Implements **16 enterprise-grade security hardening policies** with single-click batch deployment ("Harden All") or granular per-rule buttons.
-  - **Conditional Execution**: Skip rules that are already secure, avoiding redundant registry modifications and enabling ultra-fast execution.
-* **Threat Detector & Heuristic Virus Hunter**:
-  - Interrogates Microsoft Defender databases programmatically to map active malware infections, their pathways, and threat levels.
-  - Custom recursive file scanner checking writable directories (AppData, Temp, Downloads, Startup) for unsigned executables, LOLBins, and double-extension payload delivery files (e.g., `invoice.pdf.exe`).
-* **Interactive CVE Search & Software Auditor**:
-  - Enumerates all local installed programs via HKLM & HKCU registry uninstall pools.
-  - Cross-references local software names and versions against the official, live **CISA Known Exploited Vulnerabilities (KEV)** catalog.
-  - Search any software name or specific CVE ID on-demand against public **CIRCL CVE Database APIs** in real-time, complete with CVSS severity badges and Mitre reference source links.
-  - **Graceful Offline Fallback**: Senses internet connectivity and seamlessly defaults to a secure offline local inventory catalog without throwing unhandled exceptions.
-* **Responsive HTML Report Exporter**: Compiles scan statistics, security scores, and findings into a standalone responsive HTML document directly on the user's Desktop.
+| Launcher | Description |
+|:---|:---|
+| `Start_Snake_Tank.bat` | Main dashboard launcher |
+| `Snake_Tank_Scanner.bat` | Direct to vulnerability scanner |
+| `Snake_Tank_Hardener.bat` | Direct to system hardening |
 
 ---
 
-## 📂 File Architecture
+## 🏗️ Architecture
 
-The toolkit has a highly modular, clean workspace footprint:
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    SNAKE TANK ENGINE                        │
+│                                                             │
+│  ┌──────────┐  ┌──────────────────────────────────────┐    │
+│  │ SIDEBAR  │  │          CONTENT VIEWPORT             │    │
+│  │          │  │                                        │    │
+│  │ Dashboard│  │  ┌────────────────────────────────┐   │    │
+│  │ Scanner  │  │  │    Active Module Page           │   │    │
+│  │ Hardening│  │  │    (Dashboard / Scanner /       │   │    │
+│  │ Threats  │  │  │     Hardening / Threats /       │   │    │
+│  │ CVE      │  │  │     CVE / OS Auditor / About)   │   │    │
+│  │ OS Audit │  │  │                                  │   │    │
+│  │ About    │  │  └────────────────────────────────┘   │    │
+│  │          │  │                                        │    │
+│  │          │  │  ┌────────────────────────────────┐   │    │
+│  │ v1.0.0   │  │  │  DIAGNOSTIC LOG TERMINAL       │   │    │
+│  └──────────┘  │  └────────────────────────────────┘   │    │
+│                └──────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
+
+Technology Stack:
+  ├── PowerShell 5.1+ (Core Engine)
+  ├── WPF / XAML (GUI Framework)
+  ├── CIM / WMI (System Queries)
+  ├── .NET Framework 4.x (Runtime)
+  └── Win32 API (Registry / Services)
+```
+
+---
+
+## 🔬 Modules Deep Dive
+
+### 1️⃣ System Dashboard
+> Real-time security posture overview
+
+- **Security Audit Score** — Dynamic 0-100 score with letter grade badge
+- **Vulnerability Breakdown** — Severity pill counts (Critical, High, Medium, Low)
+- **Hardening Compliance** — Percentage of hardened subsystems
+- **Host Configuration** — OS, CPU, RAM, GPU, Motherboard, Network details
+- **Boot Security** — UEFI/Legacy, Secure Boot, Credential Guard (VBS)
+
+### 2️⃣ Vulnerability Scanner
+> 24-point automated security audit
+
+| # | Check | Category |
+|:--|:------|:---------|
+| 1 | Windows OS Build Compliance | System |
+| 2 | Legacy SMBv1 Protocol | Network |
+| 3 | Firewall Profile Boundaries | Network |
+| 4 | Windows Defender Real-Time | Defense |
+| 5 | RDP Network Level Auth (NLA) | Access |
+| 6 | Password Length Constraints | Identity |
+| 7 | Guest Account Status | Identity |
+| 8 | AlwaysInstallElevated Policy | Privilege |
+| 9 | Unquoted Service Paths | Privilege |
+| 10 | Startup Persistence Anomalies | Persistence |
+| 11 | UAC Consent Prompting | Privilege |
+| 12 | LLMNR Multicast Resolution | Network |
+| 13 | LSA Credential Protection | Defense |
+| 14 | RDP Default Port Exposure | Network |
+| 15 | PowerShell Script Logging | Audit |
+| 16 | WDigest Credential Caching | Defense |
+| 17 | AutoPlay/AutoRun Restrictions | System |
+| 18 | Remote Registry Service | Access |
+| 19 | Local Admin Group Membership | Identity |
+| 20 | BitLocker Drive Encryption | Defense |
+| 21 | Exposed Listening Ports | Network |
+| 22 | Third-Party AV/EDR Software | Defense |
+| 23 | Anonymous SAM/SID Enumeration | Identity |
+| 24 | Legacy TLS 1.0 & 1.1 Protocols | Network |
+
+### 3️⃣ System Hardening Hub
+> One-click remediation with rollback support
+
+Each hardening rule includes:
+- ✅ Human-readable vulnerability description
+- ✅ Live status indicator (VULNERABLE / HARDENED)
+- ✅ One-click "HARDEN NOW" button
+- ✅ Copyable manual PowerShell/Registry command
+- ✅ Real-time status validation after execution
+
+### 4️⃣ Threat & Virus Detector
+> Dual-engine threat hunting
+
+- **Active Threat Scanner** — Queries Windows Defender for known active threats
+- **Heuristic Hunter** — Scans common persistence folders for suspicious patterns:
+  - Script interpreters in startup directories
+  - Obfuscated PowerShell payloads (Base64, `-enc`, `-nop`)
+  - Batch files in user Temp/AppData directories
+  - Unsigned executables in startup paths
+
+### 5️⃣ CVE Search & Software Audit
+> Vulnerability intelligence engine
+
+- Search CVEs by keyword, software name, or CVE ID
+- Automated local software inventory extraction
+- Cross-reference installed applications against known CVEs
+- CVSS severity tagging with threat descriptions
+
+### 6️⃣ OS Deep Auditor & Hardware Inspector
+> 10-phase deep operating system inspection
+
+| Phase | Audit Area | Details |
+|:------|:-----------|:--------|
+| 1 | OS Profile | Product name, build, architecture, boot mode, Secure Boot |
+| 2 | Hardware | CPU topology, RAM, manufacturer, system model |
+| 3 | Storage | Logical partitions, filesystem, capacity, usage % |
+| 4 | Network | IPv4 adapters, interface aliases, connection status |
+| 5 | Hotfixes | Latest KB security updates, patch compliance |
+| 6 | Accounts | Local SAM accounts, enabled/disabled/lockout states |
+| 7 | SMB Shares | Exposed non-default network shares |
+| 8 | Drivers | Running kernel-mode system drivers |
+| 9 | Services | Critical service states (Defender, Spooler, WinRM) |
+| 10 | CVE Mapping | OS build → CISA KEV exploit cross-reference |
+
+**OS Strength Score Dashboard:**
+| Score | Grade | Status |
+|:------|:------|:-------|
+| 90-100 | 🟢 A | Highly Secured |
+| 70-89 | 🟢 B | Hardened |
+| 50-69 | 🟡 C | Attention Needed |
+| 0-49 | 🔴 F | Vulnerable |
+
+---
+
+## 💻 System Requirements
+
+| Requirement | Minimum | Recommended |
+|:---|:---|:---|
+| **Operating System** | Windows 10 (1809+) | Windows 11 (22H2+) |
+| **PowerShell** | 5.1 | 5.1 (built-in) |
+| **.NET Framework** | 4.7.2 | 4.8+ (built-in) |
+| **RAM** | 512 MB free | 1 GB free |
+| **Disk Space** | ~5 MB | ~5 MB |
+| **Privileges** | Standard User* | Administrator |
+| **Internet** | Not Required | Not Required |
+
+> \* Standard user can run scans; Administrator required for hardening operations.
+
+---
+
+## 📁 Project Structure
+
 ```
 Portable_Toolkit/
-├── Start_Snake_Tank.bat        <-- Main launcher wrapper (triggers elevated GUI).
-├── Snake_Tank_Scanner.bat      <-- Directly boots elevated GUI onto the Vulnerability Scanner.
-├── Snake_Tank_Hardener.bat     <-- Directly boots elevated GUI onto the Hardening Hub.
-├── test_harness.ps1            <-- Programmatic, headless testing and validation suite.
+│
+├── 🚀 Start_Snake_Tank.bat          # Main launcher (auto-elevates to Admin)
+├── 🔍 Snake_Tank_Scanner.bat        # Direct launcher → Vulnerability Scanner
+├── 🔧 Snake_Tank_Hardener.bat       # Direct launcher → System Hardening
+│
 ├── core/
-│   └── engine.ps1              <-- Core logic, WPF XAML design, scanner, and remediations.
-└── README.md                   <-- This comprehensive documentation.
+│   └── engine.ps1                   # Core PowerShell/WPF engine (all-in-one)
+│
+├── assets/
+│   ├── banner.png                   # Repository banner image
+│   ├── screenshot_dashboard.png     # Dashboard screenshot
+│   ├── cybersecurity_dashboard.png  # Additional asset
+│   └── system_hardening_shield.png  # Additional asset
+│
+├── test_harness.ps1                 # Automated test suite (5-step validation)
+├── presentation.html                # Project presentation deck
+└── README.md                        # You are here!
 ```
 
 ---
 
-## 🔍 24-Audit Checking Matrix
+## 🧪 Testing
 
-| ID | 🔴 Audit Check | Severity | Threat Category & Objective |
-| :--- | :--- | :--- | :--- |
-| **Check 1** | OS Update Baseline | `🟢 Info` | Audits build compliance (19045/22H2 benchmark) to identify unpatched kernels. |
-| **Check 2** | SMBv1 Legacy State | `🔴 Critical` | Verifies whether the legacy, exploit-prone SMBv1 network layer is active. |
-| **Check 3** | Windows Firewall Status | `🟠 High` | Audits the operational state of Domain, Private, and Public firewall profiles. |
-| **Check 4** | Defender RTP Status | `🟠 High` | Audits Defender Real-Time Protection and Behavior Monitoring parameters. |
-| **Check 5** | RDP NLA Enforcement | `🟠 High` | Checks if Network Level Authentication is active on RDP connections (mitigates BlueKeep). |
-| **Check 6** | Password Policy Strength | `🟠 High` | Evaluates local SAM password parameters (length >= 14, lockout threshold >= 5). |
-| **Check 7** | Built-in Guest Account | `🟡 Medium` | Checks if the built-in local Guest account is enabled on the local system. |
-| **Check 8** | AlwaysInstallElevated Policy | `🔴 Critical` | Checks for MSI installer elevation parameters in HKLM and HKCU registry keys. |
-| **Check 9** | Unquoted Service Paths | `🟡 Medium` | Scans active service pathways for executable files containing unquoted spaces. |
-| **Check 10** | Startup Persistence | `🟠 High` | Analyzes Run keys, AppData, and Startup directories for unsigned persistent binaries. |
-| **Check 11** | UAC Admin Consent Policy | `🟠 High` | Audits the prompting behavior of UAC prompts for administrative installations. |
-| **Check 12** | LLMNR Multicast Resolution | `🟠 High` | Verifies if Link-Local Multicast Name Resolution is active (mitigates responder spoofing). |
-| **Check 13** | LSA Protection (RunAsPPL) | `🟠 High` | Checks if LSASS process credential protection is enabled (mitigates Mimikatz dumping). |
-| **Check 14** | Default RDP Port Check | `🔵 Low` | Audits if RDP is actively listening on standard port 3389. |
-| **Check 15** | PowerShell Script Logging | `🟠 High` | Evaluates Script Block Logging parameters under policies to ensure auditing visibility. |
-| **Check 16** | WDigest Caching Status | `🔴 Critical` | Checks if LSASS cleartext credential caching is enabled under SecurityProviders. |
-| **Check 17** | AutoPlay/AutoRun Protection | `🟡 Medium` | Audits explorer drive auto-execution parameters to block physical USB propagation. |
-| **Check 18** | Remote Registry State | `🔵 Low` | Verifies if the Remote Registry service is actively running or enabled. |
-| **Check 19** | Administrators Group Pool | `🟡 Medium` | Checks for excessive membership or standard/guest user accounts in Administrators. |
-| **Check 20** | BitLocker Encryption Status | `🟠 High` | Audits the offline volume encryption parameter of C: (mitigates physical data theft). |
-| **Check 21** | Exposed Network Ports | `🟡 Medium` | Maps publicly listening high-risk ports on the local network (445, 21, 23, 139). |
-| **Check 22** | Third-Party AV/EDR Systems | `🟢 Info` | Interfaces with SecurityCenter2 to map active third-party endpoint security agents. |
-| **Check 23** | Anonymous SAM Enumeration | `🟡 Medium` | Audits if anonymous null-sessions can query usernames or share lists over the network. |
-| **Check 24** | Legacy TLS 1.0 & 1.1 Status | `🟡 Medium` | Audits SCHANNEL protocol parameters for deprecated legacy TLS versions. |
+Snake Tank includes a comprehensive automated test harness:
 
----
-
-## 🛡️ 16-Rule System Hardening Baseline
-
-| ID | 🛡️ Remediation Rule | Mitigation Target & Objective | Action Type |
-| :--- | :--- | :--- | :--- |
-| **Rule 1** | Deprecate Legacy SMBv1 | Disables SMBv1 client/server parameters to neutralize WannaCry exploitation. | `Registry/Driver` |
-| **Rule 2** | Activate Firewall Profiles | Enforces active states across all local firewall boundaries. | `System Command` |
-| **Rule 3** | Enable Defender RTP | Forces Real-Time Monitoring and Active Behavior Scanning to ON. | `MpPreference` |
-| **Rule 4** | Enforce RDP NLA | Enforces Network Level Authentication to block unauthenticated RDP remote executions. | `Registry HKLM` |
-| **Rule 5** | Harden Local Password Policy | Sets minimum local passwords to 14 characters and locks accounts after 5 failures. | `System CLI` |
-| **Rule 6** | Disable Local Guest Account | Deactivates the built-in Guest user profile to limit malicious unauthenticated logins. | `System CLI` |
-| **Rule 7** | Disable AlwaysInstallElevated | Deletes registry installer elevation bypass vectors. | `Registry HKLM/HKCU` |
-| **Rule 8** | Harden UAC Consent Prompts | Configures secure consent prompting behaviors on the Secure Desktop. | `Registry HKLM` |
-| **Rule 9** | Deprecate LLMNR | Disables Link-Local Multicast Name Resolution to block Responder hashing captures. | `Registry HKLM` |
-| **Rule 10** | Enable LSA RunAsPPL | Forces LSASS process isolation to prevent memory credential harvesting. | `Registry HKLM` |
-| **Rule 11** | Enable PS Logging | Activates PowerShell Script Block Logging for auditing transparency. | `Registry HKLM` |
-| **Rule 12** | Disable WDigest Caching | Deactivates cleartext logon credential caching in LSASS. | `Registry HKLM` |
-| **Rule 13** | Restrict AutoPlay AutoRun | Deactivates drive AutoPlay/AutoRun triggers across all devices. | `Registry HKLM` |
-| **Rule 14** | Stop & Disable Remote Registry | Stops and disables the Remote Registry service startup config. | `Service Config` |
-| **Rule 15** | Restrict Anonymous SAM | Restricts anonymous net-client NULL-session user and share name queries. | `Registry HKLM (Lsa)` |
-| **Rule 16** | Disable TLS 1.0 & 1.1 | Deprecates deprecated TLS 1.0/1.1 protocols for SCHANNEL Clients & Servers. | `Registry HKLM (Schannel)` |
-
----
-
-## 🚀 How to Run
-
-> [!WARNING]
-> To execute active hardening rules (Registry writes, Service state changes) and read protected system parameters (BitLocker status, local accounts), Snake Tank **must** be launched as an **Administrator** (UAC Elevation).
-
-### Option A: Standard GUI Startup (Double-Click)
-1. Copy the `Portable_Toolkit/` directory onto your target system or USB drive.
-2. Right-click any of the following batch wrappers and select **"Run as Administrator"**:
-   * **`Start_Snake_Tank.bat`**: Opens the Full Main Dashboard.
-   * **`Snake_Tank_Scanner.bat`**: Opens directly to the Vulnerability Scanner.
-   * **`Snake_Tank_Hardener.bat`**: Opens directly to the System Hardening hub.
-3. Click **Yes** on the UAC prompt to launch the premium Emerald-Dark Dashboard!
-
-### Option B: Terminal / CLI Startup (Command Prompt or PowerShell)
-If you are already in a terminal window, navigate to the `Portable_Toolkit` directory and execute the appropriate command for your environment:
-
-#### 1. Via PowerShell (Directly Bypassing Restrictions)
-* **If already inside an elevated Administrator PowerShell console**:
-  ```powershell
-  powershell -ExecutionPolicy Bypass -File .\core\engine.ps1
-  ```
-* **To launch and trigger UAC Administrator prompts automatically**:
-  ```powershell
-  Start-Process powershell -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File .\core\engine.ps1" -Verb RunAs
-  ```
-
-#### 2. Via Command Prompt (CMD)
-* **Direct execution of the batch script launcher**:
-  ```cmd
-  Start_Snake_Tank.bat
-  ```
-* **To launch and elevate the batch script via CLI**:
-  ```cmd
-  powershell -Command "Start-Process Start_Snake_Tank.bat -Verb RunAs"
-  ```
-
----
-
-## 🧪 Automated Integrity Self-Test
-
-The toolkit includes an advanced headless **Headless Testing Engine (`test_harness.ps1`)** that programmatically simulates, checks, and validates the entire suite:
-
-* **STEP 1**: GUI engine XAML compiling and visual control binding.
-* **STEP 2**: Executes all **24 security audits**, validating findings database insertion.
-* **STEP 3**: Validates rule status loaders and registry query providers.
-* **STEP 4**: Validates HTML Report Exporter rendering.
-* **STEP 5**: Asserts Threat Hunting APIs, local software inventory listing, and CIRCL CVE lookup.
-
-To run the automated integrity self-test, open an elevated PowerShell window and run:
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\test_harness.ps1
+# Run the full test suite
+powershell -ExecutionPolicy Bypass -File .\test_harness.ps1
 ```
 
-### Mock Console Output:
-```text
-==================================================
-     SNAKE TANK SECURITY TOOLKIT TEST HARNESS      
-==================================================
-[*] STEP 1: Loading GUI Engine & Verifying Startup...
-[+] STEP 1 PASSED: Core GUI engine loaded cleanly!
-[*] STEP 2: Running Comprehensive Vulnerability Scan...
-[SUCCESS] Vulnerability scan completed. Score: 35/100, Findings: 8.
-[+] STEP 2 PASSED: Vulnerability Scanner successfully verified (24/24 audits)!
-[*] STEP 5: Testing Threat Detector & CVE Scanner Elements...
-    [+] Running Local Software Inventory query... (Found 51 products)
-    [+] Verifying CVE Scan and Query functions...
-[+] STEP 5 PASSED: Threat Detector & CVE Scanner validated!
-==================================================
-     ALL TESTS PASSED SUCCESSFULLY! (100% OK)     
-==================================================
-```
+**Test Coverage:**
+| Step | Test | Validates |
+|:-----|:-----|:----------|
+| 1 | GUI Engine Load | XAML parsing, WPF window creation |
+| 2 | Vulnerability Scanner | All 24 security audit checks |
+| 3 | Hardening Validator | Status query for all hardening rules |
+| 4 | Report Generator | HTML report compilation & file output |
+| 5 | Threat & CVE Engine | Heuristic scanner, threat cards, CVE lookup |
 
 ---
 
-## 📜 License
+## 🤝 Contributing
 
-Created and maintained by **Snake Tank**. Distributed as a portable endpoint utility for security professionals, auditors, and system administrators. All rights reserved.
+Contributions are welcome! Here's how to get involved:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/AmazingFeature`)
+3. **Commit** your changes (`git commit -m 'Add AmazingFeature'`)
+4. **Push** to the branch (`git push origin feature/AmazingFeature`)
+5. **Open** a Pull Request
+
+### Ideas for Contribution
+- 🌐 Additional CVE database integrations
+- 📊 PDF report export functionality
+- 🔐 Active Directory auditing module
+- 🌍 Multi-language support
+- 📱 Remote scan agent capability
+
+---
+
+## ⚠️ Disclaimer
+
+> **This tool is designed for authorized security auditing and educational purposes only.**
+>
+> Always obtain proper authorization before scanning or modifying any system you do not own. The developers assume no liability for misuse, damage, or unauthorized access resulting from the use of this toolkit.
+>
+> Use responsibly. Hack ethically. Stay legal.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<p align="center">
+  <br />
+  <strong>Built with 💚 by Snake Tank</strong>
+  <br />
+  <sub>Native PowerShell • Zero Dependencies • 100% Portable</sub>
+  <br />
+  <br />
+  <img src="https://img.shields.io/badge/Made%20with-PowerShell-blue?style=for-the-badge&logo=powershell&logoColor=white" alt="Made with PowerShell" />
+</p>

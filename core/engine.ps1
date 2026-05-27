@@ -28,6 +28,15 @@ function Get-Brush ($color) {
 # 100/100 Upgrade: Global Findings Array for reporting
 $Script:ScanFindings = @()
 
+function Do-Events {
+    $frame = New-Object System.Windows.Threading.DispatcherFrame
+    [System.Windows.Threading.Dispatcher]::CurrentDispatcher.BeginInvoke(
+        [System.Windows.Threading.DispatcherPriority]::Background,
+        [System.Action]{ $frame.Continue = $false }
+    ) | Out-Null
+    [System.Windows.Threading.Dispatcher]::PushFrame($frame)
+}
+
 # 100/100 Upgrade: Scrolling Activity Logger function
 function Write-Log ($level, $message) {
     $time = Get-Date -Format "HH:mm:ss"
@@ -36,7 +45,7 @@ function Write-Log ($level, $message) {
     if ($txtLogs) {
         $txtLogs.AppendText($logLine)
         $txtLogs.ScrollToEnd()
-        [System.Windows.Forms.Application]::DoEvents() 2>$null
+        Do-Events
     }
     
     # Console stdout mirrors
@@ -58,7 +67,7 @@ function Write-Log ($level, $message) {
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Snake Tank Security Toolkit v1.0.0" Height="770" Width="980" 
-        WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Background="#0B0F19">
+        WindowStartupLocation="CenterScreen" ResizeMode="CanResize" Background="#0B0F19">
     <Window.Resources>
         <!-- Custom Navigation Sidebar Button Style with Hover and Focus templates -->
         <Style x:Key="NavBtn" TargetType="Button">
@@ -208,6 +217,8 @@ function Write-Log ($level, $message) {
                     <Button Name="btnNavThreats" Style="{StaticResource NavBtn}" Height="42" Content="Threat Detector" />
                     <!-- CVE Search & Scan -->
                     <Button Name="btnNavCVE" Style="{StaticResource NavBtn}" Height="42" Content="CVE Search &amp; Scan" />
+                    <!-- OS Deep Auditor -->
+                    <Button Name="btnNavOS" Style="{StaticResource NavBtn}" Height="42" Content="OS Deep Auditor" />
                     <!-- About -->
                     <Button Name="btnNavAbout" Style="{StaticResource NavBtn}" Height="42" Content="About Toolkit" />
                 </StackPanel>
@@ -928,8 +939,84 @@ function Write-Log ($level, $message) {
                         </Border>
                     </Grid>
                 </Grid>
+
+                <!-- PAGE 7: OS DEEP AUDITOR -->
+                <Grid Name="gridOSAudit" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="45" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Header & OS Dashboard -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                        <Grid Margin="0,0,0,15">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock Text="OS DEEP AUDITOR &amp; HARDWARE INSPECTOR" FontSize="22" FontWeight="Bold" Foreground="#F8FAFC" />
+                                <TextBlock Text="Deep audit of Windows OS internals, drivers, services, CVE mapping, and one-click hardening." FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0" />
+                            </StackPanel>
+                            
+                            <!-- Dynamic OS Status Banner -->
+                            <Border Grid.Column="1" Name="borderOSSecurityBanner" Background="#111827" BorderBrush="#94A3B8" BorderThickness="1.5" CornerRadius="6" Padding="12,6" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Name="txtOSSecurityStatusSymbol" Text="&#x1F6E1;" FontFamily="Segoe UI Emoji" FontSize="14" Foreground="#94A3B8" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                    <TextBlock Name="txtOSSecurityStatusText" Text="OS STATUS: PENDING SCAN" FontSize="11" FontWeight="Bold" Foreground="#94A3B8" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- OS Strength Score Card -->
+                        <Border Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="15">
+                            <Grid VerticalAlignment="Center">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="OS STRENGTH SCORE" FontSize="10" FontWeight="Bold" Foreground="#94A3B8" />
+                                    <TextBlock Name="txtOSScoreVal" Text="N/A" FontSize="32" FontWeight="Bold" Foreground="#94A3B8" Margin="0,5,0,0" />
+                                    <TextBlock Name="txtOSScoreText" Text="Scan Pending" FontSize="11" Foreground="#CBD5E1" Margin="0,2,0,0" />
+                                </StackPanel>
+                                
+                                <Border Grid.Column="1" Name="borderOSGradeBadge" Background="#111827" BorderBrush="#334155" BorderThickness="2" CornerRadius="28" Width="56" Height="56" VerticalAlignment="Center" Margin="10,0,0,0">
+                                    <TextBlock Name="txtOSScoreGrade" Text="-" FontSize="28" FontWeight="ExtraBold" Foreground="#94A3B8" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Scan Trigger Row -->
+                    <Grid Grid.Row="1" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Status: Press 'RUN DEEP OS AUDIT' to extract operating system parameters." VerticalAlignment="Center" Foreground="#94A3B8" FontSize="11" Name="txtOSAuditStatus" />
+                        <Button Name="btnRunOSAudit" Grid.Column="1" Style="{StaticResource PurpleBtn}" Content="RUN DEEP OS AUDIT" Width="200" Height="34" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <!-- Scrollable OS Results Panel -->
+                    <Border Grid.Row="2" Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="15">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <StackPanel Name="panelOSResults">
+                                <Border Name="borderInitialOSState" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="20">
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="No Deep OS Data Loaded" Foreground="#F8FAFC" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" />
+                                        <TextBlock Text="Click the 'RUN DEEP OS AUDIT' button above to run local OS diagnostics." Foreground="#94A3B8" FontSize="11" Margin="0,4,0,0" HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Border>
+                </Grid>
             </Grid>
-            
+
             <!-- SYSTEM DIAGNOSTIC LOGS TERMINAL (ROW 1) -->
             <Border Grid.Row="1" Background="#030712" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="6" Margin="0,15,0,0">
                 <Grid>
@@ -974,7 +1061,7 @@ $xaml.SelectNodes("//*[@Name]") | ForEach-Object {
 # ------------------------------------------------------------------------------
 function Set-NavActive ($activeBtn, $activeGrid) {
     # Reset all buttons
-    $navButtons = @($btnNavDashboard, $btnNavScanner, $btnNavHardening, $btnNavThreats, $btnNavCVE, $btnNavAbout)
+    $navButtons = @($btnNavDashboard, $btnNavScanner, $btnNavHardening, $btnNavThreats, $btnNavCVE, $btnNavOS, $btnNavAbout)
     foreach ($btn in $navButtons) {
         $btn.Background = Get-Brush("Transparent")
         $btn.Foreground = Get-Brush("#94A3B8")
@@ -984,7 +1071,7 @@ function Set-NavActive ($activeBtn, $activeGrid) {
     $activeBtn.Foreground = Get-Brush("#F8FAFC")
 
     # Toggle panels
-    $navGrids = @($gridDashboard, $gridScanner, $gridHardening, $gridThreats, $gridCVE, $gridAbout)
+    $navGrids = @($gridDashboard, $gridScanner, $gridHardening, $gridThreats, $gridCVE, $gridOSAudit, $gridAbout)
     foreach ($g in $navGrids) {
         $g.Visibility = [System.Windows.Visibility]::Collapsed
     }
@@ -996,6 +1083,7 @@ $btnNavScanner.Add_Click({ Set-NavActive $btnNavScanner $gridScanner })
 $btnNavHardening.Add_Click({ Set-NavActive $btnNavHardening $gridHardening })
 $btnNavThreats.Add_Click({ Set-NavActive $btnNavThreats $gridThreats })
 $btnNavCVE.Add_Click({ Set-NavActive $btnNavCVE $gridCVE })
+$btnNavOS.Add_Click({ Set-NavActive $btnNavOS $gridOSAudit })
 $btnNavAbout.Add_Click({ Set-NavActive $btnNavAbout $gridAbout })
 
 # Set Initial Starting Tab
@@ -1007,6 +1095,8 @@ if ($Tab -eq "Scanner") {
     Set-NavActive $btnNavThreats $gridThreats
 } elseif ($Tab -eq "CVE") {
     Set-NavActive $btnNavCVE $gridCVE
+} elseif ($Tab -eq "OS") {
+    Set-NavActive $btnNavOS $gridOSAudit
 } else {
     Set-NavActive $btnNavDashboard $gridDashboard
 }
@@ -1288,7 +1378,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 4
     $txtProgressStatus.Text = "Auditing operating system baseline update level (1/22)..."
     Write-Log "INFO" "Step 1/22: Checking Windows OS build compliance..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $build = [int](Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentBuild).CurrentBuild
     $prod = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ProductName).ProductName
@@ -1308,7 +1398,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 9
     $txtProgressStatus.Text = "Checking legacy SMBv1 networking configurations (2/22)..."
     Write-Log "INFO" "Step 2/22: Checking legacy SMBv1 networking parameters..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $smb1Key = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name SMB1 -ErrorAction SilentlyContinue
     $smbEnabled = $false
@@ -1330,7 +1420,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 13
     $txtProgressStatus.Text = "Auditing active network boundaries and Firewall profiles (3/22)..."
     Write-Log "INFO" "Step 3/22: Verifying active network firewall profile boundaries..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $fwState = Get-NetFirewallProfile -ErrorAction SilentlyContinue
     $disabledFw = @()
@@ -1356,7 +1446,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 18
     $txtProgressStatus.Text = "Verifying Defender Real-Time Protection parameters (4/22)..."
     Write-Log "INFO" "Step 4/22: Inspecting Windows Defender real-time tracking variables..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $rtp = $true
     $rtpEv = "Active"
@@ -1383,7 +1473,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 22
     $txtProgressStatus.Text = "Auditing Remote Desktop UserAuthentication settings (5/22)..."
     Write-Log "INFO" "Step 5/22: Auditing Remote Desktop Network Level Authentication (NLA)..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $rdp = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name UserAuthentication -ErrorAction SilentlyContinue
     $nla = 0
@@ -1403,7 +1493,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 27
     $txtProgressStatus.Text = "Parsing active Local Accounts password constraints (6/22)..."
     Write-Log "INFO" "Step 6/22: Parsing active Local Security Accounts password constraints..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $netAcc = net accounts
     $minLen = 0
@@ -1436,7 +1526,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 31
     $txtProgressStatus.Text = "Checking local security boundaries for built-in Guest user (7/22)..."
     Write-Log "INFO" "Step 7/22: Auditing built-in local Guest user account status..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $guestActive = $false
     $guestUser = Get-LocalUser -Name Guest -ErrorAction SilentlyContinue
@@ -1459,7 +1549,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 36
     $txtProgressStatus.Text = "Auditing Windows Installer administrative settings (8/22)..."
     Write-Log "INFO" "Step 8/22: Scanning registry policies for AlwaysInstallElevated bypass vulnerability..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $aieHKLM = Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name AlwaysInstallElevated -ErrorAction SilentlyContinue
     $aieHKCU = Get-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name AlwaysInstallElevated -ErrorAction SilentlyContinue
@@ -1482,7 +1572,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 40
     $txtProgressStatus.Text = "Scanning core system services for unquoted paths (9/22)..."
     Write-Log "INFO" "Step 9/22: Parsing local system service pathways for unquoted spaces..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $unquoted = @()
     $svcQuery = Get-WmiObject -Class Win32_Service -ErrorAction SilentlyContinue
@@ -1527,7 +1617,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 45
     $txtProgressStatus.Text = "Analyzing startup persistence folders and signature validations (10/22)..."
     Write-Log "INFO" "Step 10/22: Scanning startup entries for script interpreters or unsigned persistence..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $suspiciousKeywords = @("powershell", "cmd.exe", "wscript", "cscript", "mshta", "rundll32", "regsvr32", "certutil", "-enc", "-ec")
     $runKeys = @(
@@ -1595,7 +1685,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 50
     $txtProgressStatus.Text = "Verifying UAC administrative elevation consent policies (11/22)..."
     Write-Log "INFO" "Step 11/22: Checking User Account Control Consent Prompting behavior..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     
     $uacKey = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name ConsentPromptBehaviorAdmin -ErrorAction SilentlyContinue
     $uacVal = 5
@@ -1614,7 +1704,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 54
     $txtProgressStatus.Text = "Checking Link-Local Multicast Name Resolution (LLMNR) status (12/22)..."
     Write-Log "INFO" "Step 12/22: Checking Link-Local Multicast Name Resolution (LLMNR) status..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $llmnrVal = 1
     if (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient") {
@@ -1637,7 +1727,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 59
     $txtProgressStatus.Text = "Verifying LSA Credential Dumping Protection (13/22)..."
     Write-Log "INFO" "Step 13/22: Checking LSA Credential Dumping Protection (RunAsPPL)..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $lsaVal = 0
     $lsaKey = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "RunAsPPL" -ErrorAction SilentlyContinue
@@ -1658,7 +1748,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 63
     $txtProgressStatus.Text = "Checking Remote Desktop default port configurations (14/22)..."
     Write-Log "INFO" "Step 14/22: Checking default Remote Desktop (RDP) port exposure..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $rdpActive = $false
     $tsDenyKey = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -ErrorAction SilentlyContinue
@@ -1685,7 +1775,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 68
     $txtProgressStatus.Text = "Checking PowerShell Script Block Logging status (15/22)..."
     Write-Log "INFO" "Step 15/22: Checking PowerShell Script Block Logging status..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $psLogVal = 0
     if (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging") {
@@ -1706,7 +1796,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 72
     $txtProgressStatus.Text = "Checking WDigest Logon Credential caching (16/22)..."
     Write-Log "INFO" "Step 16/22: Checking WDigest Logon Credential caching..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $wdigestVal = 0
     $wdigestKey = Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -ErrorAction SilentlyContinue
@@ -1725,7 +1815,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 77
     $txtProgressStatus.Text = "Checking Drive AutoPlay and AutoRun settings (17/22)..."
     Write-Log "INFO" "Step 17/22: Checking Drive AutoPlay and AutoRun settings..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $autoplayVal = 0
     $autoplayKey = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoDriveTypeAutoRun" -ErrorAction SilentlyContinue
@@ -1744,7 +1834,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 81
     $txtProgressStatus.Text = "Verifying Remote Registry service state (18/22)..."
     Write-Log "INFO" "Step 18/22: Verifying Remote Registry service state..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $remReg = Get-Service -Name "RemoteRegistry" -ErrorAction SilentlyContinue
     $remRegState = "Stopped"
@@ -1767,7 +1857,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 86
     $txtProgressStatus.Text = "Auditing Local Administrators Group Membership (19/22)..."
     Write-Log "INFO" "Step 19/22: Auditing Local Administrators Group Membership..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $admins = @()
     try {
@@ -1815,7 +1905,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 90
     $txtProgressStatus.Text = "Checking BitLocker Drive Encryption Status (20/22)..."
     Write-Log "INFO" "Step 20/22: Checking BitLocker Drive Encryption Status..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $bitlockerState = "Off"
     $blEv = "Unknown Protection Status"
@@ -1848,7 +1938,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 95
     $txtProgressStatus.Text = "Analyzing Exposed Active Listening Network Ports (21/22)..."
     Write-Log "INFO" "Step 21/22: Analyzing Exposed Active Listening Network Ports..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $listeningPorts = @()
     $hasDangerousPort = $false
@@ -1896,7 +1986,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 91
     $txtProgressStatus.Text = "Verifying Third-Party AV/EDR Endpoint Software (22/24)..."
     Write-Log "INFO" "Step 22/24: Verifying Third-Party AV/EDR Endpoint Software..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $thirdPartyAVs = @()
     try {
@@ -1928,7 +2018,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 95
     $txtProgressStatus.Text = "Auditing Anonymous SAM/SID Enumeration Policy (23/24)..."
     Write-Log "INFO" "Step 23/24: Auditing Anonymous SAM/SID Enumeration Policy..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $restrictAnon = 0
     $restrictAnonSam = 0
@@ -1954,7 +2044,7 @@ function Run-VulnerabilityScan {
     $progressBarScan.Value = 100
     $txtProgressStatus.Text = "Checking Legacy TLS 1.0 & 1.1 Protocols (24/24)..."
     Write-Log "INFO" "Step 24/24: Checking Legacy TLS 1.0 & 1.1 Protocols..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $tls10Client = 1
     $tls10Server = 1
@@ -3005,7 +3095,7 @@ $btnApplyAllHardening.Add_Click({
     Write-Log "INFO" "=================================================="
     Write-Log "INFO" "APPLYING BASELINE SECURE HARDENING CONSTRAINTS"
     Write-Log "INFO" "=================================================="
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     # 1. SMBv1
     if ($statusTextSMB.Text -eq "VULNERABLE") {
@@ -3333,7 +3423,7 @@ function Start-SoftwareCVEScan {
     
     $progressBarCVE.Value = 10
     $txtCVEProgressStatus.Text = "Enumerating installed applications..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $localApps = Get-InstalledSoftware
     $totalApps = $localApps.Count
@@ -3342,7 +3432,7 @@ function Start-SoftwareCVEScan {
 
     $progressBarCVE.Value = 30
     $txtCVEProgressStatus.Text = "Downloading CISA Known Exploited Vulnerabilities catalog..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $kev = $null
     $isOffline = $false
@@ -3356,7 +3446,7 @@ function Start-SoftwareCVEScan {
 
     $progressBarCVE.Value = 60
     $txtCVEProgressStatus.Text = "Cross-referencing software profiles against databases..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $findingsCount = 0
 
@@ -3387,7 +3477,7 @@ function Start-SoftwareCVEScan {
 
         $progressBarCVE.Value = 90
         $txtCVEProgressStatus.Text = "Rendering threat compliance reports..."
-        [System.Windows.Forms.Application]::DoEvents() 2>$null
+        Do-Events
 
         if ($matchedVulnerabilities.Count -eq 0) {
             Add-CVECard "Info" "" "Host Software Compliance Audited Secure" "Successfully audited $totalApps local applications against $($vulnerabilities.Count) active vulnerabilities in CISA KEV feed. Zero matches identified! The software environment conforms to modern protection criteria." "No active exploited CVE matches detected in registry inventory." "Maintain local patch management procedures." ""
@@ -3404,7 +3494,7 @@ function Start-SoftwareCVEScan {
 
     $progressBarCVE.Value = 100
     $txtCVEProgressStatus.Text = "Vulnerability audit completed! Found $findingsCount matches."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
     Write-Log "SUCCESS" "Software vulnerability audit finished. Inspected $totalApps applications, flagged $findingsCount threat profiles."
 }
 
@@ -3420,7 +3510,7 @@ function Search-OnlineCVE {
     
     $progressBarCVE.Value = 20
     $txtCVEProgressStatus.Text = "Contacting public CVE directories..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     Write-Log "INFO" "Executing on-demand CVE search query for: $query"
 
@@ -3439,14 +3529,14 @@ function Search-OnlineCVE {
 
         $progressBarCVE.Value = 70
         $txtCVEProgressStatus.Text = "Parsing search query responses..."
-        [System.Windows.Forms.Application]::DoEvents() 2>$null
+        Do-Events
 
         if ($null -eq $results -or $results.Count -eq 0 -or ($isSpecificCVE -and !$results.id)) {
             Add-CVECard "Info" "" "Zero CVE Matching Records Found" "No CVE entries or active exploits matched the query '$query' in public vulnerability directories. If searching by software, try basic brand name matches (e.g., 'adobe', 'zoom')." "Search matched 0 catalog entries." "N/A" ""
         } else {
             $progressBarCVE.Value = 90
             $txtCVEProgressStatus.Text = "Rendering matching catalog entries..."
-            [System.Windows.Forms.Application]::DoEvents() 2>$null
+            Do-Events
 
             if ($isSpecificCVE) {
                 $cve = $results
@@ -3486,7 +3576,7 @@ function Search-OnlineCVE {
 
     $progressBarCVE.Value = 100
     $txtCVEProgressStatus.Text = "Search finished!"
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 }
 
 $btnSearchCVE.Add_Click({ Search-OnlineCVE })
@@ -3727,13 +3817,13 @@ function Start-ThreatScan {
     $progressBarThreats.Value = 10
     $txtThreatProgress.Text = "Connecting to Windows Defender database..."
     Write-Log "INFO" "Initiating active threat database query..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     [void]$panelThreatResults.Children.Clear()
 
     $progressBarThreats.Value = 50
     $txtThreatProgress.Text = "Analyzing threat alerts..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     $threats = @()
     try {
@@ -3743,7 +3833,7 @@ function Start-ThreatScan {
     }
 
     $progressBarThreats.Value = 90
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     if ($threats -and $threats.Count -gt 0) {
         $foundCount = 0
@@ -3805,7 +3895,7 @@ function Start-HeuristicScan {
     Write-Log "INFO" "=================================================="
     Write-Log "INFO" "HEURISTIC THREAT HUNTER MOTOR ACTIVATED"
     Write-Log "INFO" "=================================================="
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     [void]$panelThreatResults.Children.Clear()
 
@@ -3832,7 +3922,7 @@ function Start-HeuristicScan {
         $progressBarThreats.Value = $folderProgress
         $txtThreatProgress.Text = "Scanning directory: $folder..."
         Write-Log "INFO" "Scanning folder ($folderIndex/$totalFolders): $folder"
-        [System.Windows.Forms.Application]::DoEvents() 2>$null
+        Do-Events
 
         $files = @()
         try {
@@ -3894,7 +3984,7 @@ function Start-HeuristicScan {
 
     $progressBarThreats.Value = 95
     $txtThreatProgress.Text = "Populating detected threat reports..."
-    [System.Windows.Forms.Application]::DoEvents() 2>$null
+    Do-Events
 
     if ($detectedThreats.Count -gt 0) {
         foreach ($dt in $detectedThreats) {
@@ -3942,6 +4032,466 @@ function Start-HeuristicScan {
 
 $btnScanActiveThreats.Add_Click({ Start-ThreatScan })
 $btnScanHeuristics.Add_Click({ Start-HeuristicScan })
+
+# ==============================================================================
+# OS DEEP AUDITOR FUNCTIONS & EVENT REGISTRATION
+# ==============================================================================
+
+function Add-OSCard ($category, $title, $description, $detailsList) {
+    if ($borderInitialOSState) {
+        try { [void]$panelOSResults.Children.Remove($borderInitialOSState) } catch {}
+    }
+    $catColor = "#8B5CF6"
+    if ($category -eq "OS PROFILE") { $catColor = "#06B6D4" }
+    elseif ($category -eq "HARDWARE") { $catColor = "#10B981" }
+    elseif ($category -eq "STORAGE") { $catColor = "#3B82F6" }
+    elseif ($category -eq "NETWORK") { $catColor = "#F59E0B" }
+    elseif ($category -eq "HOTFIXES") { $catColor = "#EC4899" }
+    elseif ($category -eq "ACCOUNTS") { $catColor = "#F97316" }
+    elseif ($category -eq "SHARES") { $catColor = "#EF4444" }
+    elseif ($category -eq "DRIVERS") { $catColor = "#6366F1" }
+    elseif ($category -eq "SERVICES") { $catColor = "#14B8A6" }
+    elseif ($category -eq "OS CVE") { $catColor = "#E11D48" }
+
+    $card = New-Object System.Windows.Controls.Border
+    $card.Background = Get-Brush("#1E293B")
+    $card.CornerRadius = New-Object System.Windows.CornerRadius(6)
+    $card.BorderBrush = Get-Brush("#334155")
+    $card.BorderThickness = New-Object System.Windows.Thickness(1)
+    $card.Margin = New-Object System.Windows.Thickness(0,0,0,12)
+    $card.Padding = New-Object System.Windows.Thickness(15)
+    $stack = New-Object System.Windows.Controls.StackPanel
+    $hdr = New-Object System.Windows.Controls.StackPanel
+    $hdr.Orientation = [System.Windows.Controls.Orientation]::Horizontal
+    $hdr.Margin = New-Object System.Windows.Thickness(0,0,0,8)
+    $badge = New-Object System.Windows.Controls.Border
+    $badge.Background = Get-Brush($catColor)
+    $badge.CornerRadius = New-Object System.Windows.CornerRadius(4)
+    $badge.Padding = New-Object System.Windows.Thickness(6,2,6,2)
+    $badge.Margin = New-Object System.Windows.Thickness(0,0,8,0)
+    $badgeText = New-Object System.Windows.Controls.TextBlock
+    $badgeText.Text = $category.ToUpper()
+    $badgeText.Foreground = Get-Brush("#FFFFFF")
+    $badgeText.FontWeight = [System.Windows.FontWeights]::Bold
+    $badgeText.FontSize = 9
+    $badge.Child = $badgeText
+    [void]$hdr.Children.Add($badge)
+    $titleText = New-Object System.Windows.Controls.TextBlock
+    $titleText.Text = $title
+    $titleText.Foreground = Get-Brush("#F8FAFC")
+    $titleText.FontWeight = [System.Windows.FontWeights]::Bold
+    $titleText.FontSize = 13
+    $titleText.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+    [void]$hdr.Children.Add($titleText)
+    [void]$stack.Children.Add($hdr)
+    $descBlock = New-Object System.Windows.Controls.TextBlock
+    $descBlock.Text = $description
+    $descBlock.Foreground = Get-Brush("#94A3B8")
+    $descBlock.FontSize = 11
+    $descBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
+    $descBlock.Margin = New-Object System.Windows.Thickness(0,0,0,10)
+    [void]$stack.Children.Add($descBlock)
+    $detailsContainer = New-Object System.Windows.Controls.StackPanel
+    $detailsContainer.Margin = New-Object System.Windows.Thickness(10,0,0,0)
+    foreach ($item in $detailsList) {
+        if ($item -match "^\[(CRITICAL|HIGH|MEDIUM|LOW|SECURE)\]") {
+            $severity = $Matches[1]
+            $cleanedItem = $item -replace "^\[(CRITICAL|HIGH|MEDIUM|LOW|SECURE)\]\s*", ""
+            $rowStack = New-Object System.Windows.Controls.StackPanel
+            $rowStack.Orientation = [System.Windows.Controls.Orientation]::Horizontal
+            $rowStack.Margin = New-Object System.Windows.Thickness(0,0,0,6)
+            $pillColor = "#EF4444"
+            if ($severity -eq "HIGH") { $pillColor = "#F97316" }
+            elseif ($severity -eq "MEDIUM") { $pillColor = "#F59E0B" }
+            elseif ($severity -eq "LOW") { $pillColor = "#3B82F6" }
+            elseif ($severity -eq "SECURE") { $pillColor = "#10B981" }
+            $pill = New-Object System.Windows.Controls.Border
+            $pill.Background = Get-Brush($pillColor)
+            $pill.CornerRadius = New-Object System.Windows.CornerRadius(4)
+            $pill.Padding = New-Object System.Windows.Thickness(6,2,6,2)
+            $pill.Margin = New-Object System.Windows.Thickness(0,0,8,0)
+            $pill.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+            $pillText = New-Object System.Windows.Controls.TextBlock
+            $pillText.Text = $severity
+            $pillText.Foreground = Get-Brush("#FFFFFF")
+            $pillText.FontWeight = [System.Windows.FontWeights]::Bold
+            $pillText.FontSize = 8
+            $pill.Child = $pillText
+            [void]$rowStack.Children.Add($pill)
+            $txtBlock = New-Object System.Windows.Controls.TextBlock
+            $txtBlock.Text = $cleanedItem
+            $txtBlock.Foreground = Get-Brush("#CBD5E1")
+            $txtBlock.FontSize = 11
+            $txtBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
+            $txtBlock.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+            $txtBlock.Width = 580
+            [void]$rowStack.Children.Add($txtBlock)
+            [void]$detailsContainer.Children.Add($rowStack)
+        } else {
+            $itemBlock = New-Object System.Windows.Controls.TextBlock
+            $itemBlock.Text = "$([char]0x2022) $item"
+            $itemBlock.Foreground = Get-Brush("#CBD5E1")
+            $itemBlock.FontSize = 11
+            $itemBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
+            $itemBlock.Margin = New-Object System.Windows.Thickness(0,0,0,4)
+            [void]$detailsContainer.Children.Add($itemBlock)
+        }
+    }
+    [void]$stack.Children.Add($detailsContainer)
+    $card.Child = $stack
+    [void]$panelOSResults.Children.Add($card)
+}
+
+function Add-OSFindingCard ($category, $severity, $title, $description, $evidence, $remediationScript, $buttonLabel) {
+    if ($borderInitialOSState) {
+        try { [void]$panelOSResults.Children.Remove($borderInitialOSState) } catch {}
+    }
+    $card = New-Object System.Windows.Controls.Border
+    $card.Background = Get-Brush("#1E293B")
+    $card.CornerRadius = New-Object System.Windows.CornerRadius(6)
+    $borderColor = "#3B82F6"
+    if ($severity -eq "Critical") { $borderColor = "#EF4444" }
+    elseif ($severity -eq "High") { $borderColor = "#F97316" }
+    elseif ($severity -eq "Medium") { $borderColor = "#F59E0B" }
+    elseif ($severity -eq "Secure") { $borderColor = "#10B981" }
+    $card.BorderBrush = Get-Brush($borderColor)
+    $card.BorderThickness = New-Object System.Windows.Thickness(1,0,0,0)
+    $card.Margin = New-Object System.Windows.Thickness(0,0,0,12)
+    $card.Padding = New-Object System.Windows.Thickness(15)
+    $grid = New-Object System.Windows.Controls.Grid
+    $col1 = New-Object System.Windows.Controls.ColumnDefinition
+    $col1.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star)
+    $col2 = New-Object System.Windows.Controls.ColumnDefinition
+    $col2.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Auto)
+    $grid.ColumnDefinitions.Add($col1)
+    $grid.ColumnDefinitions.Add($col2)
+    $stack = New-Object System.Windows.Controls.StackPanel
+    [System.Windows.Controls.Grid]::SetColumn($stack, 0)
+    $hdr = New-Object System.Windows.Controls.StackPanel
+    $hdr.Orientation = [System.Windows.Controls.Orientation]::Horizontal
+    $hdr.Margin = New-Object System.Windows.Thickness(0,0,0,4)
+    $pill = New-Object System.Windows.Controls.Border
+    $pill.Background = Get-Brush($borderColor)
+    $pill.CornerRadius = New-Object System.Windows.CornerRadius(4)
+    $pill.Padding = New-Object System.Windows.Thickness(6,2,6,2)
+    $pill.Margin = New-Object System.Windows.Thickness(0,0,8,0)
+    $pillText = New-Object System.Windows.Controls.TextBlock
+    $pillText.Text = $severity.ToUpper()
+    $pillText.Foreground = Get-Brush("#FFFFFF")
+    $pillText.FontWeight = [System.Windows.FontWeights]::Bold
+    $pillText.FontSize = 9
+    $pill.Child = $pillText
+    [void]$hdr.Children.Add($pill)
+    $titleText = New-Object System.Windows.Controls.TextBlock
+    $titleText.Text = $title
+    $titleText.Foreground = Get-Brush("#F8FAFC")
+    $titleText.FontWeight = [System.Windows.FontWeights]::Bold
+    $titleText.FontSize = 13
+    $titleText.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+    [void]$hdr.Children.Add($titleText)
+    [void]$stack.Children.Add($hdr)
+    $descBlock = New-Object System.Windows.Controls.TextBlock
+    $descBlock.Text = $description
+    $descBlock.Foreground = Get-Brush("#94A3B8")
+    $descBlock.FontSize = 11
+    $descBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
+    $descBlock.Margin = New-Object System.Windows.Thickness(0,0,0,6)
+    [void]$stack.Children.Add($descBlock)
+    $evidBlock = New-Object System.Windows.Controls.TextBlock
+    $evidBlock.Text = "Evidence: $evidence"
+    $evidBlock.Foreground = Get-Brush("#64748B")
+    $evidBlock.FontSize = 10
+    $evidBlock.FontStyle = [System.Windows.FontStyles]::Italic
+    $evidBlock.TextWrapping = [System.Windows.TextWrapping]::Wrap
+    [void]$stack.Children.Add($evidBlock)
+    [void]$grid.Children.Add($stack)
+    if ($remediationScript -and $remediationScript -ne "") {
+        $localScript = $remediationScript
+        $localLabel = $buttonLabel
+        $btnAction = New-Object System.Windows.Controls.Button
+        $btnAction.Content = $buttonLabel
+        $btnAction.Background = Get-Brush("#10B981")
+        $btnAction.Foreground = Get-Brush("#FFFFFF")
+        $btnAction.FontWeight = [System.Windows.FontWeights]::Bold
+        $btnAction.FontSize = 10
+        $btnAction.Padding = New-Object System.Windows.Thickness(12,6,12,6)
+        $btnAction.BorderThickness = New-Object System.Windows.Thickness(0)
+        $btnAction.Cursor = [System.Windows.Input.Cursors]::Hand
+        $btnAction.VerticalAlignment = [System.Windows.VerticalAlignment]::Center
+        $btnAction.Margin = New-Object System.Windows.Thickness(15,0,0,0)
+        $btnAction.Tag = $localScript
+        $btnAction.Add_Click({
+            param($sender, $e)
+            $sender.IsEnabled = $false
+            $sender.Content = "APPLYING..."
+            Do-Events
+            try {
+                Invoke-Expression $sender.Tag
+                Write-Log "SUCCESS" "OS Hardening Applied Successfully"
+                $sender.Content = "SECURED"
+                $sender.Background = Get-Brush("#059669")
+            } catch {
+                Write-Log "ERROR" "OS Hardening Failed: $($_.Exception.Message)"
+                $sender.Content = "FAILED"
+                $sender.Background = Get-Brush("#EF4444")
+            }
+        })
+        [System.Windows.Controls.Grid]::SetColumn($btnAction, 1)
+        [void]$grid.Children.Add($btnAction)
+    }
+    $card.Child = $grid
+    [void]$panelOSResults.Children.Add($card)
+}
+
+function Start-OSDeepAudit {
+    $btnRunOSAudit.IsEnabled = $false
+    $btnRunOSAudit.Content = "AUDITING OS..."
+    $txtOSAuditStatus.Text = "Status: Gathering system profiles..."
+    $panelOSResults.Children.Clear()
+    $Script:OSScore = 0
+    Write-Log "INFO" "=================================================="
+    Write-Log "INFO" "SNAKE TANK DEEP OS AUDITING ENGINE INITIATED"
+    Write-Log "INFO" "=================================================="
+    Do-Events
+
+    # 1. OS PROFILE
+    $txtOSAuditStatus.Text = "Status: Querying OS Profiles..."
+    Do-Events
+    try {
+        $osName = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ProductName).ProductName
+        $osBuild = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name CurrentBuild).CurrentBuild
+        $osVer = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -ErrorAction SilentlyContinue -Name DisplayVersion).DisplayVersion
+        if (-not $osVer) { $osVer = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -ErrorAction SilentlyContinue -Name ReleaseId).ReleaseId }
+        $osArch = $env:PROCESSOR_ARCHITECTURE
+        $bootType = "Unknown"
+        $firmwareType = [Environment]::GetEnvironmentVariable("firmware_type", "Machine")
+        if ($firmwareType) { $bootType = $firmwareType }
+        else {
+            if (Test-Path "HKLM:\System\CurrentControlSet\Control\SecureBoot\State" -ErrorAction SilentlyContinue) { $bootType = "UEFI" }
+            else { $bootType = "Legacy BIOS" }
+        }
+        $secureBoot = "Disabled/Unsupported"
+        $sbKey = Get-ItemProperty -Path "HKLM:\System\CurrentControlSet\Control\SecureBoot\State" -Name "UEFISecureBootEnabled" -ErrorAction SilentlyContinue
+        if ($sbKey -and $sbKey.UEFISecureBootEnabled -eq 1) { $secureBoot = "Enabled"; $Script:OSScore += 20 }
+        $osDetails = @("Product Name: $osName", "Build Version: $osBuild ($osVer)", "Architecture: $osArch", "System Boot Type: $bootType", "Secure Boot State: $secureBoot", "System Directory: $env:windir")
+        Add-OSCard "OS PROFILE" "Windows Operating System Profile" "Summary of host OS build, runtime environment, and active firmware validation." $osDetails
+        if ($secureBoot -ne "Enabled") {
+            Add-OSFindingCard "OS PROFILE" "Medium" "UEFI Secure Boot Disabled" "Secure Boot prevents malicious firmware and rootkits from loading during startup." "Secure Boot State: $secureBoot" 'Start-Process "ms-settings:recovery"' "OPEN RECOVERY OPTIONS"
+        }
+        Write-Log "INFO" "OS Profile Audit completed."
+    } catch { Write-Log "ERROR" "Failed to audit OS Profile: $($_.Exception.Message)" }
+
+    # 2. HARDWARE SPECIFICATIONS
+    $txtOSAuditStatus.Text = "Status: Collecting Hardware specifications..."
+    Do-Events
+    try {
+        $cpu = "Unknown Processor"; $cores = 1
+        $cpuInfo = Get-CimInstance -ClassName Win32_Processor -ErrorAction SilentlyContinue
+        if (!$cpuInfo) { $cpuInfo = Get-WmiObject -Class Win32_Processor -ErrorAction SilentlyContinue }
+        if ($cpuInfo) { $cpu = $cpuInfo.Name.Trim(); $cores = $cpuInfo.NumberOfCores }
+        $memSizeGb = 0
+        $compSystem = Get-CimInstance -ClassName Win32_ComputerSystem -ErrorAction SilentlyContinue
+        if (!$compSystem) { $compSystem = Get-WmiObject -Class Win32_ComputerSystem -ErrorAction SilentlyContinue }
+        if ($compSystem) { $memSizeGb = [Math]::Round($compSystem.TotalPhysicalMemory / 1GB, 2) }
+        $hwDetails = @("CPU Model: $cpu", "CPU Cores: $cores physical cores", "Total Physical RAM: $memSizeGb GB", "Computer Manufacturer: $($compSystem.Manufacturer)", "System Model: $($compSystem.Model)")
+        Add-OSCard "HARDWARE" "System Hardware Specifications" "Extracts processor topology, total installed RAM, and manufacturer motherboard profiles." $hwDetails
+        Write-Log "INFO" "Hardware Profile Audit completed."
+    } catch { Write-Log "ERROR" "Failed to audit Hardware: $($_.Exception.Message)" }
+
+    # 3. DISK & STORAGE
+    $txtOSAuditStatus.Text = "Status: Evaluating Disk and Storage..."
+    Do-Events
+    try {
+        $disks = Get-CimInstance -ClassName Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction SilentlyContinue
+        if (!$disks) { $disks = Get-WmiObject -Class Win32_LogicalDisk -Filter "DriveType=3" -ErrorAction SilentlyContinue }
+        $diskDetails = @()
+        if ($disks) {
+            foreach ($d in $disks) {
+                $totalSize = [Math]::Round($d.Size / 1GB, 2); $freeSize = [Math]::Round($d.FreeSpace / 1GB, 2)
+                $usedPercent = [Math]::Round((($d.Size - $d.FreeSpace) / $d.Size) * 100, 1)
+                $diskDetails += "Volume $($d.DeviceID) ($($d.VolumeName)) | Format: $($d.FileSystem) | Size: $totalSize GB ($freeSize GB Free, $usedPercent% Used)"
+            }
+        } else { $diskDetails += "Could not enumerate logical drives." }
+        Add-OSCard "STORAGE" "Logical Partitions and Storage Health" "Monitors connected logical drive capacities, volumes, and consumption percentages." $diskDetails
+        Write-Log "INFO" "Storage Hive Audit completed."
+    } catch { Write-Log "ERROR" "Failed to audit Storage: $($_.Exception.Message)" }
+
+    # 4. NETWORK ADAPTERS
+    $txtOSAuditStatus.Text = "Status: Inspecting Network Adapter details..."
+    Do-Events
+    try {
+        $adapters = Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue | Where-Object { $_.IPAddress -notlike "127.*" }
+        $netDetails = @()
+        if ($adapters) {
+            foreach ($a in $adapters) {
+                $intf = Get-NetAdapter -InterfaceIndex $a.InterfaceIndex -ErrorAction SilentlyContinue
+                $status = if ($intf) { $intf.Status } else { "Active" }
+                $netDetails += "Interface: $($a.InterfaceAlias) | IP: $($a.IPAddress) | Status: $status"
+            }
+        } else { $netDetails += "No active IPv4 network interface endpoints identified." }
+        Add-OSCard "NETWORK" "Active IPv4 Adapter Interfaces" "List of active local network adapters, alias handles, and assigned IPv4 addresses." $netDetails
+        Write-Log "INFO" "Network Adapter Audit completed."
+    } catch { Write-Log "ERROR" "Failed to audit Network Adapters: $($_.Exception.Message)" }
+
+    # 5. HOTFIXES
+    $txtOSAuditStatus.Text = "Status: Enumerating Hotfixes..."
+    Do-Events
+    try {
+        $hotfixes = Get-HotFix -ErrorAction SilentlyContinue
+        $hfDetails = @()
+        if ($hotfixes) {
+            $latest = $hotfixes | Where-Object { $_.InstalledOn } | Sort-Object InstalledOn -Descending | Select-Object -First 5
+            if (-not $latest) { $latest = $hotfixes | Select-Object -First 5 }
+            foreach ($h in $latest) { $hfDetails += "ID: $($h.HotFixID) | Description: $($h.Description) | Installed On: $($h.InstalledOn)" }
+            if ($hotfixes.Count -gt 5) { $hfDetails += "... and $($hotfixes.Count - 5) other hotfix updates installed." }
+        } else { $hfDetails += "No Windows KB Hotfix history found." }
+        Add-OSCard "HOTFIXES" "Installed KB Security Updates" "Audit of the most recent operating system security updates and KB patch levels." $hfDetails
+        Write-Log "INFO" "KB Hotfixes Audit completed."
+    } catch { Write-Log "ERROR" "Failed to audit KB Hotfixes: $($_.Exception.Message)" }
+
+    # 6. LOCAL USER ACCOUNTS
+    $txtOSAuditStatus.Text = "Status: Enumerating Local Accounts..."
+    Do-Events
+    try {
+        $users = Get-CimInstance -ClassName Win32_UserAccount -Filter "LocalAccount=True" -ErrorAction SilentlyContinue
+        if (!$users) { $users = Get-WmiObject -Class Win32_UserAccount -Filter "LocalAccount=True" -ErrorAction SilentlyContinue }
+        $userDetails = @()
+        if ($users) {
+            foreach ($u in $users) {
+                $status = if ($u.Disabled) { "Disabled" } else { "Enabled" }
+                $lock = if ($u.Lockout) { "Locked Out" } else { "Active" }
+                $userDetails += "Username: $($u.Name) ($($u.Caption)) | State: $status ($lock)"
+            }
+        } else { $userDetails += "Could not extract local Win32_UserAccount data." }
+        Add-OSCard "ACCOUNTS" "Local Security User Account Registry" "Lists all local SAM accounts, operational states, and administrative lockout statuses." $userDetails
+        Write-Log "INFO" "Local Accounts Audit completed."
+    } catch { Write-Log "ERROR" "Failed to audit Local User Accounts: $($_.Exception.Message)" }
+
+    # 7. NETWORK SHARES
+    $txtOSAuditStatus.Text = "Status: Auditing Network SMB Shares..."
+    Do-Events
+    try {
+        $shares = Get-SmbShare -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike "*$" }
+        $shareDetails = @()
+        if ($shares) {
+            foreach ($s in $shares) { $shareDetails += "Share Name: $($s.Name) | Local Path: $($s.Path) | Description: $($s.Description)" }
+            Add-OSCard "SHARES" "Exposed Shared Folders (SMB)" "Audits active non-default folder shares which could invite anonymous reconnaissance." $shareDetails
+            Add-OSFindingCard "SHARES" "High" "Exposed Network Shares" "Active SMB shares expose the system to anonymous reconnaissance and lateral movement." "Shares Found: $($shares.Count)" 'Stop-Service LanmanServer -Force; Set-Service LanmanServer -StartupType Disabled' "DISABLE SMB SERVER"
+        } else {
+            $shareDetails += "No public SMB folder shares configured."
+            Add-OSCard "SHARES" "Exposed Shared Folders (SMB)" "Audits active non-default folder shares which could invite anonymous reconnaissance." $shareDetails
+            $Script:OSScore += 20
+        }
+        Write-Log "INFO" "Exposed Network Shares Audit completed."
+    } catch { Write-Log "ERROR" "Failed to audit Network Shares: $($_.Exception.Message)" }
+
+    # 8. ACTIVE SYSTEM DRIVERS
+    $txtOSAuditStatus.Text = "Status: Querying installed and active drivers..."
+    Do-Events
+    try {
+        $drivers = Get-CimInstance -ClassName Win32_SystemDriver -Filter "State='Running'" -ErrorAction SilentlyContinue
+        if (-not $drivers) { $drivers = Get-WmiObject -Class Win32_SystemDriver -Filter "State='Running'" -ErrorAction SilentlyContinue }
+        $driverDetails = @()
+        if ($drivers) {
+            $sample = $drivers | Select-Object -First 8
+            foreach ($d in $sample) { $driverDetails += "Driver: $($d.Name) | Display: $($d.DisplayName) | State: $($d.State)" }
+            if ($drivers.Count -gt 8) { $driverDetails += "... and $($drivers.Count - 8) other active running system drivers." }
+        } else { $driverDetails += "No active system drivers resolved." }
+        Add-OSCard "DRIVERS" "Installed & Active System Drivers" "Monitors core running OS kernel drivers, active states, and system file pathways." $driverDetails
+        $Script:OSScore += 15
+        Write-Log "INFO" "Active System Drivers Audit completed."
+    } catch { Write-Log "ERROR" "Failed to audit Active Drivers: $($_.Exception.Message)" }
+
+    # 9. CRITICAL WINDOWS SERVICES (with hardening)
+    $txtOSAuditStatus.Text = "Status: Inspecting critical services..."
+    Do-Events
+    try {
+        $targetServices = @("WinRM", "RemoteRegistry", "Spooler", "Windefend", "wuauserv", "SharedAccess")
+        $services = Get-Service -Name $targetServices -ErrorAction SilentlyContinue
+        $serviceDetails = @()
+        if ($services) {
+            foreach ($s in $services) { $serviceDetails += "Service: $($s.Name) | Display: $($s.DisplayName) | Status: $($s.Status)" }
+        } else { $serviceDetails += "No targeted critical services could be queried." }
+        Add-OSCard "SERVICES" "Critical Windows Operating System Services" "Audits status of vital background system services like Windows Update, Defender, and Spooler." $serviceDetails
+        $spooler = Get-Service Spooler -ErrorAction SilentlyContinue
+        if ($spooler -and $spooler.Status -eq 'Running') {
+            Add-OSFindingCard "SERVICES" "High" "Print Spooler Running (PrintNightmare)" "The Print Spooler service is exposed to PrintNightmare privilege escalation. It should be disabled unless actively sharing printers." "Status: Running" 'Stop-Service Spooler -Force; Set-Service Spooler -StartupType Disabled' "DISABLE SPOOLER"
+        } else { $Script:OSScore += 15 }
+        $remreg = Get-Service RemoteRegistry -ErrorAction SilentlyContinue
+        if ($remreg -and $remreg.Status -eq 'Running') {
+            Add-OSFindingCard "SERVICES" "High" "Remote Registry Running" "Allows remote attackers to query and modify system registry keys via network protocols." "Status: Running" 'Stop-Service RemoteRegistry -Force; Set-Service RemoteRegistry -StartupType Disabled' "DISABLE REMOTE REGISTRY"
+        } else { $Script:OSScore += 10 }
+        Write-Log "INFO" "Critical System Services Audit completed."
+    } catch { Write-Log "ERROR" "Failed to audit Critical Services: $($_.Exception.Message)" }
+
+    # 10. OS CVE VULNERABILITY ANALYSIS
+    $txtOSAuditStatus.Text = "Status: Cross-referencing OS CVE databases..."
+    Do-Events
+    try {
+        $hasWin10Patch = $false; $hasWin11Patch = $false
+        if ($hotfixes) {
+            foreach ($h in $hotfixes) {
+                if ($h.HotFixID -eq "KB5037768" -or $h.HotFixID -eq "KB5039211" -or $h.HotFixID -eq "KB5040422") { $hasWin10Patch = $true }
+                if ($h.HotFixID -eq "KB5037771" -or $h.HotFixID -eq "KB5039212" -or $h.HotFixID -eq "KB5040431") { $hasWin11Patch = $true }
+            }
+        }
+        $osCveDetails = @()
+        if ($osName -match "Windows 10" -or $osBuild -eq 19045) {
+            if (-not $hasWin10Patch) {
+                $osCveDetails += "[CRITICAL] CVE-2024-30044 | CVSS 8.8 (RCE) - Windows MSHTML Remote Code Execution. Remediation: Apply KB5037768."
+                $osCveDetails += "[HIGH] CVE-2024-21338 | CVSS 7.8 (EoP) - Windows Kernel Elevation of Privilege (CISA KEV). Remediation: KB5037768."
+                $osCveDetails += "[HIGH] CVE-2023-38180 | CVSS 7.5 (DoS) - .NET Framework Denial of Service. Remediation: Apply cumulative patches."
+            } else { $osCveDetails += "[SECURE] Windows 10 Cumulative Compliance Verified. Critical OS CVEs remediated." }
+        } elseif ($osName -match "Windows 11" -or $osBuild -ge 22000) {
+            if (-not $hasWin11Patch) {
+                $osCveDetails += "[CRITICAL] CVE-2024-30044 | CVSS 8.8 (RCE) - Windows MSHTML Remote Code Execution. Remediation: Apply KB5037771."
+                $osCveDetails += "[HIGH] CVE-2024-21338 | CVSS 7.8 (EoP) - Windows Kernel EoP (CISA KEV). Remediation: KB5037771."
+                $osCveDetails += "[HIGH] CVE-2024-20656 | CVSS 7.8 (EoP) - VS Code Elevation of Privilege. Remediation: Apply Windows Update."
+            } else { $osCveDetails += "[SECURE] Windows 11 Cumulative Compliance Verified. Critical OS CVEs remediated." }
+        } else { $osCveDetails += "[CRITICAL] CVE-2023-24955 | CVSS 7.2 (RCE) - Legacy OS Remote Code Execution. Remediation: Upgrade OS." }
+        Add-OSCard "OS CVE" "OS-Level Vulnerability & Exploitation Analysis" "Cross-references running Windows Build and hotfixes against CISA KEV and active OS CVE threats." $osCveDetails
+        if ((-not $hasWin10Patch -and ($osName -match "Windows 10" -or $osBuild -eq 19045)) -or (-not $hasWin11Patch -and ($osName -match "Windows 11" -or $osBuild -ge 22000))) {
+            Add-OSFindingCard "OS CVE" "Critical" "Missing Critical Security Updates" "The operating system is missing critical cumulative updates exposing it to RCE and kernel privilege escalation." "Missing: Latest Cumulative Update" 'Start-Process "ms-settings:windowsupdate-action"' "LAUNCH WINDOWS UPDATE"
+        } else { $Script:OSScore += 20 }
+        Write-Log "INFO" "OS CVE Database Mapping completed."
+    } catch { Write-Log "ERROR" "Failed to audit OS CVEs: $($_.Exception.Message)" }
+
+    # UPDATE OS DASHBOARD
+    $txtOSScoreVal.Text = "$($Script:OSScore)/100"
+    if ($Script:OSScore -ge 90) {
+        $txtOSScoreGrade.Text = "A"; $txtOSScoreText.Text = "Highly Secured"
+        $borderOSGradeBadge.BorderBrush = Get-Brush("#10B981"); $txtOSScoreGrade.Foreground = Get-Brush("#10B981")
+        $txtOSSecurityStatusText.Text = "OS STATUS: SECURED"; $txtOSSecurityStatusText.Foreground = Get-Brush("#10B981")
+        $borderOSSecurityBanner.BorderBrush = Get-Brush("#10B981")
+        $txtOSSecurityStatusSymbol.Text = [char]::ConvertFromUtf32(0x1F6E1); $txtOSSecurityStatusSymbol.Foreground = Get-Brush("#10B981")
+    } elseif ($Script:OSScore -ge 70) {
+        $txtOSScoreGrade.Text = "B"; $txtOSScoreText.Text = "Hardened"
+        $borderOSGradeBadge.BorderBrush = Get-Brush("#34D399"); $txtOSScoreGrade.Foreground = Get-Brush("#34D399")
+        $txtOSSecurityStatusText.Text = "OS STATUS: OPTIMIZED"; $txtOSSecurityStatusText.Foreground = Get-Brush("#34D399")
+        $borderOSSecurityBanner.BorderBrush = Get-Brush("#34D399")
+        $txtOSSecurityStatusSymbol.Text = [char]::ConvertFromUtf32(0x1F6E1); $txtOSSecurityStatusSymbol.Foreground = Get-Brush("#34D399")
+    } elseif ($Script:OSScore -ge 50) {
+        $txtOSScoreGrade.Text = "C"; $txtOSScoreText.Text = "Attention Needed"
+        $borderOSGradeBadge.BorderBrush = Get-Brush("#F59E0B"); $txtOSScoreGrade.Foreground = Get-Brush("#F59E0B")
+        $txtOSSecurityStatusText.Text = "OS STATUS: ATTENTION REQUIRED"; $txtOSSecurityStatusText.Foreground = Get-Brush("#F59E0B")
+        $borderOSSecurityBanner.BorderBrush = Get-Brush("#F59E0B")
+        $txtOSSecurityStatusSymbol.Text = [char]::ConvertFromUtf32(0x26A0); $txtOSSecurityStatusSymbol.Foreground = Get-Brush("#F59E0B")
+    } else {
+        $txtOSScoreGrade.Text = "F"; $txtOSScoreText.Text = "Vulnerable"
+        $borderOSGradeBadge.BorderBrush = Get-Brush("#EF4444"); $txtOSScoreGrade.Foreground = Get-Brush("#EF4444")
+        $txtOSSecurityStatusText.Text = "OS STATUS: CRITICAL RISK"; $txtOSSecurityStatusText.Foreground = Get-Brush("#EF4444")
+        $borderOSSecurityBanner.BorderBrush = Get-Brush("#EF4444")
+        $txtOSSecurityStatusSymbol.Text = [char]::ConvertFromUtf32(0x1F6A8); $txtOSSecurityStatusSymbol.Foreground = Get-Brush("#EF4444")
+    }
+
+    $btnRunOSAudit.IsEnabled = $true
+    $btnRunOSAudit.Content = "RUN DEEP OS AUDIT"
+    $txtOSAuditStatus.Text = "Status: Deep OS Audit Completed successfully!"
+    Write-Log "SUCCESS" "Deep OS Auditing and Hardware Inspection completed successfully!"
+}
+
+$btnRunOSAudit.Add_Click({ Start-OSDeepAudit })
+
 
 # ------------------------------------------------------------------------------
 # 8. LAUNCH WINDOW

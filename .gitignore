@@ -1,0 +1,19 @@
+# Temporary files
+~$*
+*.tmp
+*.bak
+
+# Patch/fix scripts (dev only)
+patch.ps1
+fix_line.ps1
+
+# Office lock files
+~$*.docx
+
+# Windows system files
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+.idea/
