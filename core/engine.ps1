@@ -478,6 +478,7 @@ function Write-Log ($level, $message) {
                                         <StackPanel Grid.Column="0" Margin="0,0,15,0">
                                             <TextBlock Text="2. Activate Windows Firewall Profiles" FontWeight="Bold" Foreground="#F8FAFC" FontSize="14" />
                                             <TextBlock Text="Enforces active state on all firewall boundaries (Domain, Private, Public) to block unauthorized connections." TextWrapping="Wrap" Foreground="#CBD5E1" FontSize="11" Margin="0,4,0,8" />
+                                            <TextBlock Text="&#x26A0; HIGH RISK: DISABLING FIREWALL EXPOSES ENDPOINT TO REMOTE ATTACKS!" Foreground="#EF4444" FontWeight="Bold" FontSize="9" Margin="0,0,0,6" />
                                             <TextBlock Text="MANUAL REMEDIATION COMMAND (NETSH):" Foreground="#10B981" FontWeight="Bold" FontSize="9" Margin="0,0,0,3" />
                                             <TextBox Text="netsh advfirewall set allprofiles state on" IsReadOnly="True" Background="#0F172A" Foreground="#E2E8F0" BorderBrush="#334155" Padding="5" FontSize="10" FontFamily="Consolas" />
                                         </StackPanel>
@@ -499,6 +500,7 @@ function Write-Log ($level, $message) {
                                         <StackPanel Grid.Column="0" Margin="0,0,15,0">
                                             <TextBlock Text="3. Enable Defender Real-Time Protection" FontWeight="Bold" Foreground="#F8FAFC" FontSize="14" />
                                             <TextBlock Text="Ensures constant malware tracking, behavioral scans, and active payload containment." TextWrapping="Wrap" Foreground="#CBD5E1" FontSize="11" Margin="0,4,0,8" />
+                                            <TextBlock Text="&#x26A0; HIGH RISK: DISABLING REAL-TIME PROTECTION STOPS MALWARE DETECTION!" Foreground="#EF4444" FontWeight="Bold" FontSize="9" Margin="0,0,0,6" />
                                             <TextBlock Text="MANUAL REMEDIATION COMMAND (POWERSHELL):" Foreground="#10B981" FontWeight="Bold" FontSize="9" Margin="0,0,0,3" />
                                             <TextBox Text="Set-MpPreference -DisableRealtimeMonitoring $false -DisableBehaviorMonitoring $false" IsReadOnly="True" Background="#0F172A" Foreground="#E2E8F0" BorderBrush="#334155" Padding="5" FontSize="10" FontFamily="Consolas" />
                                         </StackPanel>
@@ -562,6 +564,7 @@ function Write-Log ($level, $message) {
                                         <StackPanel Grid.Column="0" Margin="0,0,15,0">
                                             <TextBlock Text="6. Disable Built-in Guest Account" FontWeight="Bold" Foreground="#F8FAFC" FontSize="14" />
                                             <TextBlock Text="Deactivates the built-in Guest user, ensuring anonymous clients cannot authenticate locally." TextWrapping="Wrap" Foreground="#CBD5E1" FontSize="11" Margin="0,4,0,8" />
+                                            <TextBlock Text="&#x26A0; HIGH RISK: ENABLING GUEST ACCOUNT ALLOWS ANONYMOUS RECONNAISSANCE!" Foreground="#EF4444" FontWeight="Bold" FontSize="9" Margin="0,0,0,6" />
                                             <TextBlock Text="MANUAL REMEDIATION COMMAND (NET USER):" Foreground="#10B981" FontWeight="Bold" FontSize="9" Margin="0,0,0,3" />
                                             <TextBox Text="net user Guest /active:no" IsReadOnly="True" Background="#0F172A" Foreground="#E2E8F0" BorderBrush="#334155" Padding="5" FontSize="10" FontFamily="Consolas" />
                                         </StackPanel>
@@ -583,6 +586,7 @@ function Write-Log ($level, $message) {
                                         <StackPanel Grid.Column="0" Margin="0,0,15,0">
                                             <TextBlock Text="7. Disable AlwaysInstallElevated Policy" FontWeight="Bold" Foreground="#F8FAFC" FontSize="14" />
                                             <TextBlock Text="Removes registry keys allowing ordinary users to execute malicious MSI files as high-privileged SYSTEM." TextWrapping="Wrap" Foreground="#CBD5E1" FontSize="11" Margin="0,4,0,8" />
+                                            <TextBlock Text="&#x26A0; HIGH RISK: ENABLING THIS ALLOWS STANDARD USERS TO INJECT SYSTEM BACKDOORS!" Foreground="#EF4444" FontWeight="Bold" FontSize="9" Margin="0,0,0,6" />
                                             <TextBlock Text="MANUAL REMEDIATION COMMAND (REGISTRY):" Foreground="#10B981" FontWeight="Bold" FontSize="9" Margin="0,0,0,3" />
                                             <TextBox Text="reg add &quot;HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer&quot; /v AlwaysInstallElevated /t REG_DWORD /d 0 /f" IsReadOnly="True" Background="#0F172A" Foreground="#E2E8F0" BorderBrush="#334155" Padding="5" FontSize="10" FontFamily="Consolas" />
                                         </StackPanel>
@@ -604,6 +608,7 @@ function Write-Log ($level, $message) {
                                         <StackPanel Grid.Column="0" Margin="0,0,15,0">
                                             <TextBlock Text="8. Enforce UAC Consent Prompting" FontWeight="Bold" Foreground="#F8FAFC" FontSize="14" />
                                             <TextBlock Text="Configures User Account Control to require explicit admin approval on secure desktop, preventing silent privilege escalation by background software." TextWrapping="Wrap" Foreground="#CBD5E1" FontSize="11" Margin="0,4,0,8" />
+                                            <TextBlock Text="&#x26A0; HIGH RISK: DISABLING THIS ALLOWS BACKGROUND MALWARE TO BYPASS UAC SILENTLY!" Foreground="#EF4444" FontWeight="Bold" FontSize="9" Margin="0,0,0,6" />
                                             <TextBlock Text="MANUAL REMEDIATION COMMAND (REGISTRY):" Foreground="#10B981" FontWeight="Bold" FontSize="9" Margin="0,0,0,3" />
                                             <TextBox Text="reg add &quot;HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System&quot; /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 5 /f" IsReadOnly="True" Background="#0F172A" Foreground="#E2E8F0" BorderBrush="#334155" Padding="5" FontSize="10" FontFamily="Consolas" />
                                         </StackPanel>
@@ -730,6 +735,7 @@ function Write-Log ($level, $message) {
                                         <StackPanel Grid.Column="0" Margin="0,0,15,0">
                                             <TextBlock Text="14. Disable Remote Registry Service" FontWeight="Bold" Foreground="#F8FAFC" FontSize="14" />
                                             <TextBlock Text="Disables the Remote Registry service to prevent remote network clients from modifying local system registry parameters." TextWrapping="Wrap" Foreground="#CBD5E1" FontSize="11" Margin="0,4,0,8" />
+                                            <TextBlock Text="&#x26A0; HIGH RISK: ENABLING REMOTE REGISTRY EXPOSES CRITICAL REGISTRY HIERARCHIES!" Foreground="#EF4444" FontWeight="Bold" FontSize="9" Margin="0,0,0,6" />
                                             <TextBlock Text="MANUAL REMEDIATION COMMAND (SERVICE):" Foreground="#10B981" FontWeight="Bold" FontSize="9" Margin="0,0,0,3" />
                                             <TextBox Text="powershell -Command &quot;Stop-Service -Name RemoteRegistry -Force; Set-Service -Name RemoteRegistry -StartupType Disabled&quot;" IsReadOnly="True" Background="#0F172A" Foreground="#E2E8F0" BorderBrush="#334155" Padding="5" FontSize="10" FontFamily="Consolas" />
                                         </StackPanel>
@@ -2195,11 +2201,13 @@ function Update-AllHardeningStatuses {
         $statusTextSMB.Text = "VULNERABLE"
         $btnHardenSMB.IsEnabled = $true
         $btnHardenSMB.Content = "HARDEN NOW"
+        $btnHardenSMB.Background = Get-Brush("#10B981")
     } else {
         $statusBorderSMB.Background = Get-Brush("#10B981")
         $statusTextSMB.Text = "SECURE"
-        $btnHardenSMB.IsEnabled = $false
-        $btnHardenSMB.Content = "VERIFIED"
+        $btnHardenSMB.IsEnabled = $true
+        $btnHardenSMB.Content = "REVERT"
+        $btnHardenSMB.Background = Get-Brush("#475569")
     }
     
     # 2. Firewall
@@ -2220,11 +2228,13 @@ function Update-AllHardeningStatuses {
         $statusTextFW.Text = "VULNERABLE"
         $btnHardenFW.IsEnabled = $true
         $btnHardenFW.Content = "HARDEN NOW"
+        $btnHardenFW.Background = Get-Brush("#10B981")
     } else {
         $statusBorderFW.Background = Get-Brush("#10B981")
         $statusTextFW.Text = "SECURE"
-        $btnHardenFW.IsEnabled = $false
-        $btnHardenFW.Content = "VERIFIED"
+        $btnHardenFW.IsEnabled = $true
+        $btnHardenFW.Content = "REVERT"
+        $btnHardenFW.Background = Get-Brush("#475569")
     }
     
     # 3. Defender
@@ -2242,11 +2252,13 @@ function Update-AllHardeningStatuses {
         $statusTextDef.Text = "VULNERABLE"
         $btnHardenDef.IsEnabled = $true
         $btnHardenDef.Content = "HARDEN NOW"
+        $btnHardenDef.Background = Get-Brush("#10B981")
     } else {
         $statusBorderDef.Background = Get-Brush("#10B981")
         $statusTextDef.Text = "SECURE"
-        $btnHardenDef.IsEnabled = $false
-        $btnHardenDef.Content = "VERIFIED"
+        $btnHardenDef.IsEnabled = $true
+        $btnHardenDef.Content = "REVERT"
+        $btnHardenDef.Background = Get-Brush("#475569")
     }
     
     # 4. RDP NLA
@@ -2258,11 +2270,13 @@ function Update-AllHardeningStatuses {
         $statusTextRDP.Text = "VULNERABLE"
         $btnHardenRDP.IsEnabled = $true
         $btnHardenRDP.Content = "HARDEN NOW"
+        $btnHardenRDP.Background = Get-Brush("#10B981")
     } else {
         $statusBorderRDP.Background = Get-Brush("#10B981")
         $statusTextRDP.Text = "SECURE"
-        $btnHardenRDP.IsEnabled = $false
-        $btnHardenRDP.Content = "VERIFIED"
+        $btnHardenRDP.IsEnabled = $true
+        $btnHardenRDP.Content = "REVERT"
+        $btnHardenRDP.Background = Get-Brush("#475569")
     }
     
     # 5. Password Policy
@@ -2281,11 +2295,13 @@ function Update-AllHardeningStatuses {
         $statusTextPWD.Text = "VULNERABLE"
         $btnHardenPWD.IsEnabled = $true
         $btnHardenPWD.Content = "HARDEN NOW"
+        $btnHardenPWD.Background = Get-Brush("#10B981")
     } else {
         $statusBorderPWD.Background = Get-Brush("#10B981")
         $statusTextPWD.Text = "SECURE"
-        $btnHardenPWD.IsEnabled = $false
-        $btnHardenPWD.Content = "VERIFIED"
+        $btnHardenPWD.IsEnabled = $true
+        $btnHardenPWD.Content = "REVERT"
+        $btnHardenPWD.Background = Get-Brush("#475569")
     }
     
     # 6. Guest Account
@@ -2301,11 +2317,13 @@ function Update-AllHardeningStatuses {
         $statusTextGuest.Text = "VULNERABLE"
         $btnHardenGuest.IsEnabled = $true
         $btnHardenGuest.Content = "HARDEN NOW"
+        $btnHardenGuest.Background = Get-Brush("#10B981")
     } else {
         $statusBorderGuest.Background = Get-Brush("#10B981")
         $statusTextGuest.Text = "SECURE"
-        $btnHardenGuest.IsEnabled = $false
-        $btnHardenGuest.Content = "VERIFIED"
+        $btnHardenGuest.IsEnabled = $true
+        $btnHardenGuest.Content = "REVERT"
+        $btnHardenGuest.Background = Get-Brush("#475569")
     }
     
     # 7. AlwaysInstallElevated
@@ -2319,11 +2337,13 @@ function Update-AllHardeningStatuses {
         $statusTextAIE.Text = "VULNERABLE"
         $btnHardenAIE.IsEnabled = $true
         $btnHardenAIE.Content = "HARDEN NOW"
+        $btnHardenAIE.Background = Get-Brush("#10B981")
     } else {
         $statusBorderAIE.Background = Get-Brush("#10B981")
         $statusTextAIE.Text = "SECURE"
-        $btnHardenAIE.IsEnabled = $false
-        $btnHardenAIE.Content = "VERIFIED"
+        $btnHardenAIE.IsEnabled = $true
+        $btnHardenAIE.Content = "REVERT"
+        $btnHardenAIE.Background = Get-Brush("#475569")
     }
 
     # 8. UAC Administrative Consent Policy
@@ -2335,11 +2355,13 @@ function Update-AllHardeningStatuses {
         $statusTextUAC.Text = "VULNERABLE"
         $btnHardenUAC.IsEnabled = $true
         $btnHardenUAC.Content = "HARDEN NOW"
+        $btnHardenUAC.Background = Get-Brush("#10B981")
     } else {
         $statusBorderUAC.Background = Get-Brush("#10B981")
         $statusTextUAC.Text = "SECURE"
-        $btnHardenUAC.IsEnabled = $false
-        $btnHardenUAC.Content = "VERIFIED"
+        $btnHardenUAC.IsEnabled = $true
+        $btnHardenUAC.Content = "REVERT"
+        $btnHardenUAC.Background = Get-Brush("#475569")
     }
 
     # 9. LLMNR Multicast Resolution
@@ -2353,11 +2375,13 @@ function Update-AllHardeningStatuses {
         $statusTextLLMNR.Text = "VULNERABLE"
         $btnHardenLLMNR.IsEnabled = $true
         $btnHardenLLMNR.Content = "HARDEN NOW"
+        $btnHardenLLMNR.Background = Get-Brush("#10B981")
     } else {
         $statusBorderLLMNR.Background = Get-Brush("#10B981")
         $statusTextLLMNR.Text = "SECURE"
-        $btnHardenLLMNR.IsEnabled = $false
-        $btnHardenLLMNR.Content = "VERIFIED"
+        $btnHardenLLMNR.IsEnabled = $true
+        $btnHardenLLMNR.Content = "REVERT"
+        $btnHardenLLMNR.Background = Get-Brush("#475569")
     }
 
     # 10. LSA Protection
@@ -2369,11 +2393,13 @@ function Update-AllHardeningStatuses {
         $statusTextLSA.Text = "VULNERABLE"
         $btnHardenLSA.IsEnabled = $true
         $btnHardenLSA.Content = "HARDEN NOW"
+        $btnHardenLSA.Background = Get-Brush("#10B981")
     } else {
         $statusBorderLSA.Background = Get-Brush("#10B981")
         $statusTextLSA.Text = "SECURE"
-        $btnHardenLSA.IsEnabled = $false
-        $btnHardenLSA.Content = "VERIFIED"
+        $btnHardenLSA.IsEnabled = $true
+        $btnHardenLSA.Content = "REVERT"
+        $btnHardenLSA.Background = Get-Brush("#475569")
     }
 
     # 11. PS Script Block Logging
@@ -2387,11 +2413,13 @@ function Update-AllHardeningStatuses {
         $statusTextPSLog.Text = "VULNERABLE"
         $btnHardenPSLog.IsEnabled = $true
         $btnHardenPSLog.Content = "HARDEN NOW"
+        $btnHardenPSLog.Background = Get-Brush("#10B981")
     } else {
         $statusBorderPSLog.Background = Get-Brush("#10B981")
         $statusTextPSLog.Text = "SECURE"
-        $btnHardenPSLog.IsEnabled = $false
-        $btnHardenPSLog.Content = "VERIFIED"
+        $btnHardenPSLog.IsEnabled = $true
+        $btnHardenPSLog.Content = "REVERT"
+        $btnHardenPSLog.Background = Get-Brush("#475569")
     }
 
     # 12. WDigest Caching
@@ -2403,11 +2431,13 @@ function Update-AllHardeningStatuses {
         $statusTextWDigest.Text = "VULNERABLE"
         $btnHardenWDigest.IsEnabled = $true
         $btnHardenWDigest.Content = "HARDEN NOW"
+        $btnHardenWDigest.Background = Get-Brush("#10B981")
     } else {
         $statusBorderWDigest.Background = Get-Brush("#10B981")
         $statusTextWDigest.Text = "SECURE"
-        $btnHardenWDigest.IsEnabled = $false
-        $btnHardenWDigest.Content = "VERIFIED"
+        $btnHardenWDigest.IsEnabled = $true
+        $btnHardenWDigest.Content = "REVERT"
+        $btnHardenWDigest.Background = Get-Brush("#475569")
     }
 
     # 13. AutoPlay Protection
@@ -2419,11 +2449,13 @@ function Update-AllHardeningStatuses {
         $statusTextAutoPlay.Text = "VULNERABLE"
         $btnHardenAutoPlay.IsEnabled = $true
         $btnHardenAutoPlay.Content = "HARDEN NOW"
+        $btnHardenAutoPlay.Background = Get-Brush("#10B981")
     } else {
         $statusBorderAutoPlay.Background = Get-Brush("#10B981")
         $statusTextAutoPlay.Text = "SECURE"
-        $btnHardenAutoPlay.IsEnabled = $false
-        $btnHardenAutoPlay.Content = "VERIFIED"
+        $btnHardenAutoPlay.IsEnabled = $true
+        $btnHardenAutoPlay.Content = "REVERT"
+        $btnHardenAutoPlay.Background = Get-Brush("#475569")
     }
 
     # 14. Remote Registry
@@ -2439,11 +2471,13 @@ function Update-AllHardeningStatuses {
         $statusTextRemReg.Text = "VULNERABLE"
         $btnHardenRemReg.IsEnabled = $true
         $btnHardenRemReg.Content = "HARDEN NOW"
+        $btnHardenRemReg.Background = Get-Brush("#10B981")
     } else {
         $statusBorderRemReg.Background = Get-Brush("#10B981")
         $statusTextRemReg.Text = "SECURE"
-        $btnHardenRemReg.IsEnabled = $false
-        $btnHardenRemReg.Content = "VERIFIED"
+        $btnHardenRemReg.IsEnabled = $true
+        $btnHardenRemReg.Content = "REVERT"
+        $btnHardenRemReg.Background = Get-Brush("#475569")
     }
 
     # 15. Restrict Anonymous SAM/SID Enumeration
@@ -2461,11 +2495,13 @@ function Update-AllHardeningStatuses {
         $statusTextRestrictAnon.Text = "VULNERABLE"
         $btnHardenRestrictAnon.IsEnabled = $true
         $btnHardenRestrictAnon.Content = "HARDEN NOW"
+        $btnHardenRestrictAnon.Background = Get-Brush("#10B981")
     } else {
         $statusBorderRestrictAnon.Background = Get-Brush("#10B981")
         $statusTextRestrictAnon.Text = "SECURE"
-        $btnHardenRestrictAnon.IsEnabled = $false
-        $btnHardenRestrictAnon.Content = "VERIFIED"
+        $btnHardenRestrictAnon.IsEnabled = $true
+        $btnHardenRestrictAnon.Content = "REVERT"
+        $btnHardenRestrictAnon.Background = Get-Brush("#475569")
     }
 
     # 16. Legacy TLS Protocols
@@ -2491,11 +2527,13 @@ function Update-AllHardeningStatuses {
         $statusTextTLS.Text = "VULNERABLE"
         $btnHardenTLS.IsEnabled = $true
         $btnHardenTLS.Content = "HARDEN NOW"
+        $btnHardenTLS.Background = Get-Brush("#10B981")
     } else {
         $statusBorderTLS.Background = Get-Brush("#10B981")
         $statusTextTLS.Text = "SECURE"
-        $btnHardenTLS.IsEnabled = $false
-        $btnHardenTLS.Content = "VERIFIED"
+        $btnHardenTLS.IsEnabled = $true
+        $btnHardenTLS.Content = "REVERT"
+        $btnHardenTLS.Background = Get-Brush("#475569")
     }
 
     # Recalculate Compliance % for Dashboard Info
@@ -2539,223 +2577,409 @@ if ($btnCopyLogs) {
 
 # Click handlers for individual hardening rules
 
+# 1.# Click handlers for individual hardening rules (Harden / Revert Toggle Engine)
+
 # 1. SMBv1
 $btnHardenSMB.Add_Click({
-    Write-Log "INFO" "Applying deprecation patch for obsolete SMBv1 protocol..."
-    try {
-        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "SMB1" -Value 0 -Force -ErrorAction Stop
-        Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force -ErrorAction Stop
-        Write-Log "SUCCESS" "Legacy SMBv1 protocol deprecated successfully."
-    } catch {
-        Write-Log "WARNING" "Failed to deprecate SMBv1: $($_.Exception.Message)"
+    if ($statusTextSMB.Text -eq "SECURE") {
+        Write-Log "WARNING" "Reverting SMBv1 protocol to INSECURE/ENABLED state..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "SMB1" -Value 1 -Force -ErrorAction Stop
+            Set-SmbServerConfiguration -EnableSMB1Protocol $true -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "Legacy SMBv1 protocol has been enabled. System is now VULNERABLE."
+        } catch {
+            Write-Log "ERROR" "Failed to enable SMBv1: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Applying deprecation patch for obsolete SMBv1 protocol..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" -Name "SMB1" -Value 0 -Force -ErrorAction Stop
+            Set-SmbServerConfiguration -EnableSMB1Protocol $false -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "Legacy SMBv1 protocol deprecated successfully."
+        } catch {
+            Write-Log "WARNING" "Failed to deprecate SMBv1: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 2. Firewall
 $btnHardenFW.Add_Click({
-    Write-Log "INFO" "Enforcing active states on all local Firewall boundaries..."
-    try {
-        netsh advfirewall set allprofiles state on >$null 2>&1
-        Write-Log "SUCCESS" "Active Windows Firewall profiles verified and activated."
-    } catch {
-        Write-Log "WARNING" "Failed to activate firewall profiles: $($_.Exception.Message)"
+    if ($statusTextFW.Text -eq "SECURE") {
+        Write-Log "WARNING" "Disabling all local Firewall profiles... [HIGH RISK]"
+        try {
+            netsh advfirewall set allprofiles state off >$null 2>&1
+            Write-Log "SUCCESS" "All Windows Firewall profiles deactivated. System is now VULNERABLE."
+        } catch {
+            Write-Log "ERROR" "Failed to disable firewall: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Enforcing active states on all local Firewall boundaries..."
+        try {
+            netsh advfirewall set allprofiles state on >$null 2>&1
+            Write-Log "SUCCESS" "Active Windows Firewall profiles verified and activated."
+        } catch {
+            Write-Log "WARNING" "Failed to activate firewall profiles: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 3. Defender
 $btnHardenDef.Add_Click({
-    Write-Log "INFO" "Enabling Defender Active Protection parameters..."
-    try {
-        Set-MpPreference -DisableRealtimeMonitoring $false -ErrorAction Stop
-        Set-MpPreference -DisableBehaviorMonitoring $false -ErrorAction Stop
-        Write-Log "SUCCESS" "Defender Real-Time behavioral monitors initialized."
-    } catch {
-        Write-Log "WARNING" "Failed to enable Defender monitors: $($_.Exception.Message)"
+    if ($statusTextDef.Text -eq "SECURE") {
+        Write-Log "WARNING" "Disabling Windows Defender Real-Time Protection... [HIGH RISK]"
+        try {
+            Set-MpPreference -DisableRealtimeMonitoring $true -ErrorAction Stop
+            Set-MpPreference -DisableBehaviorMonitoring $true -ErrorAction Stop
+            Write-Log "SUCCESS" "Defender Real-Time protection monitors deactivated. System is now VULNERABLE."
+        } catch {
+            Write-Log "ERROR" "Failed to disable Defender monitors: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Enabling Defender Active Protection parameters..."
+        try {
+            Set-MpPreference -DisableRealtimeMonitoring $false -ErrorAction Stop
+            Set-MpPreference -DisableBehaviorMonitoring $false -ErrorAction Stop
+            Write-Log "SUCCESS" "Defender Real-Time behavioral monitors initialized."
+        } catch {
+            Write-Log "WARNING" "Failed to enable Defender monitors: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 4. RDP NLA
 $btnHardenRDP.Add_Click({
-    Write-Log "INFO" "Configuring RDP authentication parameters..."
-    try {
-        if (!(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp")) {
-            New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "WinStations\RDP-Tcp" -Force -ErrorAction Stop >$null
+    if ($statusTextRDP.Text -eq "SECURE") {
+        Write-Log "WARNING" "Disabling RDP Network Level Authentication (NLA)..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 0 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "RDP NLA deactivated. System is now VULNERABLE to pre-auth exploits."
+        } catch {
+            Write-Log "ERROR" "Failed to deactivate RDP NLA: $($_.Exception.Message)"
         }
-        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 1 -Force -ErrorAction Stop
-        Write-Log "SUCCESS" "RDP Network Level Authentication (NLA) enforced."
-    } catch {
-        Write-Log "WARNING" "Failed to enforce NLA: $($_.Exception.Message)"
+    } else {
+        Write-Log "INFO" "Configuring RDP authentication parameters..."
+        try {
+            if (!(Test-Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp")) {
+                New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "WinStations\RDP-Tcp" -Force -ErrorAction Stop >$null
+            }
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" -Name "UserAuthentication" -Value 1 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "RDP Network Level Authentication (NLA) enforced."
+        } catch {
+            Write-Log "WARNING" "Failed to enforce NLA: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 5. Password Policy
 $btnHardenPWD.Add_Click({
-    Write-Log "INFO" "Applying complex Local Accounts password policy configurations..."
-    try {
-        net accounts /minpwlen:14 /lockoutthreshold:5 >$null 2>&1
-        Write-Log "SUCCESS" "Local password minimum length (14 chars) and lockout limit (5 attempts) hardened."
-    } catch {
-        Write-Log "WARNING" "Failed to harden password policies: $($_.Exception.Message)"
+    if ($statusTextPWD.Text -eq "SECURE") {
+        Write-Log "WARNING" "Reverting system password requirements to blank default..."
+        try {
+            net accounts /minpwlen:0 /lockoutthreshold:0 >$null 2>&1
+            Write-Log "SUCCESS" "Local password minimum length set to 0 and lockout disabled. System is now VULNERABLE."
+        } catch {
+            Write-Log "ERROR" "Failed to weaken password policies: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Applying complex Local Accounts password policy configurations..."
+        try {
+            net accounts /minpwlen:14 /lockoutthreshold:5 >$null 2>&1
+            Write-Log "SUCCESS" "Local password minimum length (14 chars) and lockout limit (5 attempts) hardened."
+        } catch {
+            Write-Log "WARNING" "Failed to harden password policies: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 6. Guest Account
 $btnHardenGuest.Add_Click({
-    Write-Log "INFO" "Deactivating built-in local Guest account..."
-    try {
-        net user Guest /active:no >$null 2>&1
-        Write-Log "SUCCESS" "Built-in Guest account status deactivated."
-    } catch {
-        Write-Log "WARNING" "Failed to deactivate Guest user: $($_.Exception.Message)"
+    if ($statusTextGuest.Text -eq "SECURE") {
+        Write-Log "WARNING" "Enabling built-in Guest user account... [HIGH RISK]"
+        try {
+            net user Guest /active:yes >$null 2>&1
+            Write-Log "SUCCESS" "Built-in Guest account status activated. System is now VULNERABLE."
+        } catch {
+            Write-Log "ERROR" "Failed to activate Guest account: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Deactivating built-in local Guest account..."
+        try {
+            net user Guest /active:no >$null 2>&1
+            Write-Log "SUCCESS" "Built-in Guest account status deactivated."
+        } catch {
+            Write-Log "WARNING" "Failed to deactivate Guest user: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 7. AlwaysInstallElevated
 $btnHardenAIE.Add_Click({
-    Write-Log "INFO" "Deprecating installer elevated execution paths..."
-    try {
-        if (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer")) {
-            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Installer" -Force -ErrorAction Stop >$null
+    if ($statusTextAIE.Text -eq "SECURE") {
+        Write-Log "WARNING" "Activating AlwaysInstallElevated privileged installer execution... [HIGH RISK]"
+        try {
+            if (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Installer" -Force -ErrorAction Stop >$null
+            }
+            if (!(Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer")) {
+                New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name "Installer" -Force -ErrorAction Stop >$null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name "AlwaysInstallElevated" -Value 1 -Force -ErrorAction Stop
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name "AlwaysInstallElevated" -Value 1 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "AlwaysInstallElevated enabled. Standard users can execute MSIs with SYSTEM privileges."
+        } catch {
+            Write-Log "ERROR" "Failed to enable AlwaysInstallElevated: $($_.Exception.Message)"
         }
-        if (!(Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer")) {
-            New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows" -Name "Installer" -Force -ErrorAction Stop >$null
+    } else {
+        Write-Log "INFO" "Deprecating installer elevated execution paths..."
+        try {
+            if (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows" -Name "Installer" -Force -ErrorAction Stop >$null
+            }
+            if (!(Test-Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer")) {
+                New-Item -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name "Installer" -Force -ErrorAction Stop >$null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name "AlwaysInstallElevated" -Value 0 -Force -ErrorAction Stop
+            Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name "AlwaysInstallElevated" -Value 0 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "Privileged AlwaysInstallElevated installer policies disabled."
+        } catch {
+            Write-Log "WARNING" "Failed to disable AlwaysInstallElevated: $($_.Exception.Message)"
         }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name "AlwaysInstallElevated" -Value 0 -Force -ErrorAction Stop
-        Set-ItemProperty -Path "HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer" -Name "AlwaysInstallElevated" -Value 0 -Force -ErrorAction Stop
-        Write-Log "SUCCESS" "Privileged AlwaysInstallElevated installer policies disabled."
-    } catch {
-        Write-Log "WARNING" "Failed to disable AlwaysInstallElevated: $($_.Exception.Message)"
     }
     Update-AllHardeningStatuses
 })
 
 # 8. UAC Administrative Consent Policy
 $btnHardenUAC.Add_Click({
-    Write-Log "INFO" "Applying UAC administrative consent prompting constraints..."
-    try {
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 5 -Force -ErrorAction Stop
-        Write-Log "SUCCESS" "User Account Control Consent Prompting policies enforced on secure desktop."
-    } catch {
-        Write-Log "WARNING" "Failed to enforce secure UAC prompts: $($_.Exception.Message)"
+    if ($statusTextUAC.Text -eq "SECURE") {
+        Write-Log "WARNING" "Disabling UAC secure elevation consent prompts... [HIGH RISK]"
+        try {
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 0 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "ConsentPromptBehaviorAdmin set to 0. Background apps can silently elevate to Admin without user consent."
+        } catch {
+            Write-Log "ERROR" "Failed to disable UAC consent prompt: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Applying UAC administrative consent prompting constraints..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -Value 5 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "User Account Control Consent Prompting policies enforced on secure desktop."
+        } catch {
+            Write-Log "WARNING" "Failed to enforce secure UAC prompts: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 9. LLMNR Multicast Name Resolution
 $btnHardenLLMNR.Add_Click({
-    Write-Log "INFO" "Applying Link-Local Multicast Name Resolution (LLMNR) deprecation patch..."
-    try {
-        if (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient")) {
-            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT" -Name "DNSClient" -Force -ErrorAction Stop >$null
+    if ($statusTextLLMNR.Text -eq "SECURE") {
+        Write-Log "WARNING" "Re-enabling LLMNR local multicast name resolution..."
+        try {
+            if (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient") {
+                Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Name "EnableMulticast" -Force -ErrorAction Stop
+            }
+            Write-Log "SUCCESS" "LLMNR name resolution multicast enabled. System vulnerable to Responder spoofing."
+        } catch {
+            Write-Log "ERROR" "Failed to enable LLMNR: $($_.Exception.Message)"
         }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Name "EnableMulticast" -Value 0 -Force -ErrorAction Stop
-        Write-Log "SUCCESS" "Link-Local Multicast Name Resolution (LLMNR) disabled successfully."
-    } catch {
-        Write-Log "WARNING" "Failed to disable LLMNR: $($_.Exception.Message)"
+    } else {
+        Write-Log "INFO" "Applying Link-Local Multicast Name Resolution (LLMNR) deprecation patch..."
+        try {
+            if (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient")) {
+                New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT" -Name "DNSClient" -Force -ErrorAction Stop >$null
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Name "EnableMulticast" -Value 0 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "Link-Local Multicast Name Resolution (LLMNR) disabled successfully."
+        } catch {
+            Write-Log "WARNING" "Failed to disable LLMNR: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 10. LSA Protection
 $btnHardenLSA.Add_Click({
-    Write-Log "INFO" "Configuring Protected Process Light (PPL) protection for LSA..."
-    try {
-        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "RunAsPPL" -Value 1 -Force -ErrorAction Stop
-        Write-Log "SUCCESS" "LSA Credential dumping protection (RunAsPPL) enabled. A system reboot is required to apply the protection policy fully."
-    } catch {
-        Write-Log "WARNING" "Failed to enable LSA protection: $($_.Exception.Message)"
+    if ($statusTextLSA.Text -eq "SECURE") {
+        Write-Log "WARNING" "Disabling LSA process dump protection (RunAsPPL)..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "RunAsPPL" -Value 0 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "RunAsPPL protection deactivated. System vulnerable to LSASS password dumping."
+        } catch {
+            Write-Log "ERROR" "Failed to disable LSA Protection: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Configuring Protected Process Light (PPL) protection for LSA..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -Name "RunAsPPL" -Value 1 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "LSA Credential dumping protection (RunAsPPL) enabled. A system reboot is required to apply the protection policy fully."
+        } catch {
+            Write-Log "WARNING" "Failed to enable LSA protection: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 11. PS Logging
 $btnHardenPSLog.Add_Click({
-    Write-Log "INFO" "Enabling PowerShell Script Block Logging..."
-    try {
-        if (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging")) {
-            [void](New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell" -Name "ScriptBlockLogging" -Force -ErrorAction Stop)
+    if ($statusTextPSLog.Text -eq "SECURE") {
+        Write-Log "WARNING" "Disabling PowerShell Script Block Logging..."
+        try {
+            if (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging") {
+                Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Name "EnableScriptBlockLogging" -Force -ErrorAction Stop
+            }
+            Write-Log "SUCCESS" "PowerShell script block auditing deactivated."
+        } catch {
+            Write-Log "ERROR" "Failed to disable PowerShell Script Block Logging: $($_.Exception.Message)"
         }
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Name "EnableScriptBlockLogging" -Value 1 -Force -ErrorAction Stop
-        Write-Log "SUCCESS" "PowerShell Script Block Logging enabled."
-    } catch {
-        Write-Log "WARNING" "Failed to enable PowerShell Script Block Logging: $($_.Exception.Message)"
+    } else {
+        Write-Log "INFO" "Enabling PowerShell Script Block Logging..."
+        try {
+            if (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging")) {
+                [void](New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell" -Name "ScriptBlockLogging" -Force -ErrorAction Stop)
+            }
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Name "EnableScriptBlockLogging" -Value 1 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "PowerShell Script Block Logging enabled."
+        } catch {
+            Write-Log "WARNING" "Failed to enable PowerShell Script Block Logging: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 12. WDigest Caching
 $btnHardenWDigest.Add_Click({
-    Write-Log "INFO" "Disabling WDigest Logon Credential Caching..."
-    try {
-        Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Value 0 -Force -ErrorAction Stop
-        Write-Log "SUCCESS" "WDigest cleartext password caching in LSASS disabled."
-    } catch {
-        Write-Log "WARNING" "Failed to disable WDigest logon caching: $($_.Exception.Message)"
+    if ($statusTextWDigest.Text -eq "SECURE") {
+        Write-Log "WARNING" "Enabling plaintext WDigest password caching in LSASS..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Value 1 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "WDigest cleartext password caching re-enabled. Credential harvesters can extract plaintext passwords from LSASS memory."
+        } catch {
+            Write-Log "ERROR" "Failed to enable WDigest Caching: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Disabling WDigest Logon Credential Caching..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest" -Name "UseLogonCredential" -Value 0 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "WDigest cleartext password caching in LSASS disabled."
+        } catch {
+            Write-Log "WARNING" "Failed to disable WDigest logon caching: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 13. AutoPlay Protection
 $btnHardenAutoPlay.Add_Click({
-    Write-Log "INFO" "Enforcing AutoPlay / AutoRun drive restrictions..."
-    try {
-        Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoDriveTypeAutoRun" -Value 255 -Force -ErrorAction Stop
-        Write-Log "SUCCESS" "AutoPlay and AutoRun drive propagation protections enforced."
-    } catch {
-        Write-Log "WARNING" "Failed to restrict AutoPlay settings: $($_.Exception.Message)"
+    if ($statusTextAutoPlay.Text -eq "SECURE") {
+        Write-Log "WARNING" "Enabling drive AutoPlay and AutoRun propagation..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoDriveTypeAutoRun" -Value 0 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "AutoPlay protections deactivated. Executables can execute automatically from external media."
+        } catch {
+            Write-Log "ERROR" "Failed to remove AutoPlay restrictions: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Enforcing AutoPlay / AutoRun drive restrictions..."
+        try {
+            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer" -Name "NoDriveTypeAutoRun" -Value 255 -Force -ErrorAction Stop
+            Write-Log "SUCCESS" "AutoPlay and AutoRun drive propagation protections enforced."
+        } catch {
+            Write-Log "WARNING" "Failed to restrict AutoPlay settings: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 14. Remote Registry
 $btnHardenRemReg.Add_Click({
-    Write-Log "INFO" "Disabling Remote Registry Service..."
-    try {
-        Stop-Service -Name "RemoteRegistry" -Force -ErrorAction SilentlyContinue
-        Set-Service -Name "RemoteRegistry" -StartupType Disabled -ErrorAction Stop
-        Write-Log "SUCCESS" "Remote Registry service stopped and startup configured as Disabled."
-    } catch {
-        Write-Log "WARNING" "Failed to stop Remote Registry service: $($_.Exception.Message)"
+    if ($statusTextRemReg.Text -eq "SECURE") {
+        Write-Log "WARNING" "Activating Remote Registry Service... [HIGH RISK]"
+        try {
+            Set-Service -Name "RemoteRegistry" -StartupType Automatic -ErrorAction Stop
+            Start-Service -Name "RemoteRegistry" -ErrorAction Stop
+            Write-Log "SUCCESS" "Remote Registry service initialized in automatic startup mode."
+        } catch {
+            Write-Log "ERROR" "Failed to start Remote Registry service: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Disabling Remote Registry Service..."
+        try {
+            Stop-Service -Name "RemoteRegistry" -Force -ErrorAction SilentlyContinue
+            Set-Service -Name "RemoteRegistry" -StartupType Disabled -ErrorAction Stop
+            Write-Log "SUCCESS" "Remote Registry service stopped and startup configured as Disabled."
+        } catch {
+            Write-Log "WARNING" "Failed to stop Remote Registry service: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 15. Restrict Anonymous SAM/SID Enumeration
 $btnHardenRestrictAnon.Add_Click({
-    Write-Log "INFO" "Enforcing Anonymous SAM/SID Enumeration restrictions..."
-    try {
-        [void](Set-RegistryDword -path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -name "RestrictAnonymous" -value 1)
-        [void](Set-RegistryDword -path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -name "RestrictAnonymousSAM" -value 1)
-        Write-Log "SUCCESS" "Anonymous SAM/SID enumeration restrictions successfully enforced."
-    } catch {
-        Write-Log "WARNING" "Failed to enforce Anonymous SAM/SID restrictions: $($_.Exception.Message)"
+    if ($statusTextRestrictAnon.Text -eq "SECURE") {
+        Write-Log "WARNING" "Allowing Anonymous Null Session SAM/SID network queries..."
+        try {
+            [void](Set-RegistryDword -path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -name "RestrictAnonymous" -value 0)
+            [void](Set-RegistryDword -path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -name "RestrictAnonymousSAM" -value 0)
+            Write-Log "SUCCESS" "Anonymous SID queries re-enabled. System vulnerable to lateral reconnaissance."
+        } catch {
+            Write-Log "ERROR" "Failed to allow anonymous queries: $($_.Exception.Message)"
+        }
+    } else {
+        Write-Log "INFO" "Enforcing Anonymous SAM/SID Enumeration restrictions..."
+        try {
+            [void](Set-RegistryDword -path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -name "RestrictAnonymous" -value 1)
+            [void](Set-RegistryDword -path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa" -name "RestrictAnonymousSAM" -value 1)
+            Write-Log "SUCCESS" "Anonymous SAM/SID enumeration restrictions successfully enforced."
+        } catch {
+            Write-Log "WARNING" "Failed to enforce Anonymous SAM/SID restrictions: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
 
 # 16. Legacy TLS Protocols
 $btnHardenTLS.Add_Click({
-    Write-Log "INFO" "Disabling insecure legacy TLS 1.0 & 1.1 protocol handshakes in SCHANNEL..."
-    try {
-        $paths = @(
-            "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client",
-            "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server",
-            "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client",
-            "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"
-        )
-        foreach ($p in $paths) {
-            [void](Set-RegistryDword -path $p -name "Enabled" -value 0)
-            [void](Set-RegistryDword -path $p -name "DisabledByDefault" -value 1)
+    if ($statusTextTLS.Text -eq "SECURE") {
+        Write-Log "WARNING" "Re-enabling legacy TLS 1.0 and TLS 1.1 server/client channels..."
+        try {
+            $paths = @(
+                "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client",
+                "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server",
+                "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client",
+                "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"
+            )
+            foreach ($p in $paths) {
+                [void](Set-RegistryDword -path $p -name "Enabled" -value 1)
+                [void](Set-RegistryDword -path $p -name "DisabledByDefault" -value 0)
+            }
+            Write-Log "SUCCESS" "Legacy TLS 1.0 & 1.1 active protocols re-enabled in SCHANNEL."
+        } catch {
+            Write-Log "ERROR" "Failed to enable legacy TLS: $($_.Exception.Message)"
         }
-        Write-Log "SUCCESS" "Insecure legacy TLS 1.0 & 1.1 protocols deprecated in SCHANNEL."
-    } catch {
-        Write-Log "WARNING" "Failed to disable legacy TLS protocols: $($_.Exception.Message)"
+    } else {
+        Write-Log "INFO" "Disabling insecure legacy TLS 1.0 & 1.1 protocol handshakes in SCHANNEL..."
+        try {
+            $paths = @(
+                "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client",
+                "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server",
+                "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Client",
+                "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.1\Server"
+            )
+            foreach ($p in $paths) {
+                [void](Set-RegistryDword -path $p -name "Enabled" -value 0)
+                [void](Set-RegistryDword -path $p -name "DisabledByDefault" -value 1)
+            }
+            Write-Log "SUCCESS" "Insecure legacy TLS 1.0 & 1.1 protocols deprecated in SCHANNEL."
+        } catch {
+            Write-Log "WARNING" "Failed to disable legacy TLS protocols: $($_.Exception.Message)"
+        }
     }
     Update-AllHardeningStatuses
 })
