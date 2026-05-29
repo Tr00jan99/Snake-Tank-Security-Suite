@@ -17,3 +17,7 @@ Desktop.ini
 # IDE
 .vscode/
 .idea/
+
+# Generated scan reports
+scanning report.pdf
+scanning_report.html
