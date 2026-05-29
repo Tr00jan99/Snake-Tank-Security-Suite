@@ -9,9 +9,9 @@ color 0B
 net session >nul 2>&1
 if %errorLevel% == 0 (
     cd /d "%~dp0"
-    powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0core\engine.ps1" -Tab "Scanner"
+    powershell -NoProfile -STA -ExecutionPolicy Bypass -File "%~dp0core\engine.ps1" -Tab "Scanner"
 ) else (
     echo [!] Requesting UAC Administrator elevation...
-    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell -ArgumentList '-NoProfile -ExecutionPolicy Bypass -File \"%~dp0core\engine.ps1\" -Tab Scanner' -Verb RunAs"
+    powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process powershell -ArgumentList '-NoProfile -STA -ExecutionPolicy Bypass -File \"%~dp0core\engine.ps1\" -Tab Scanner' -Verb RunAs"
 )
 exit /b
