@@ -375,6 +375,7 @@ function Write-Log ($level, $message) {
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="50" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
@@ -401,8 +402,33 @@ function Write-Log ($level, $message) {
                         </Grid>
                     </Grid>
 
-                    <!-- Results List -->
-                    <Border Grid.Row="2" Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="5">
+                    <!-- Search & Filter Panel (Row 2) -->
+                    <Border Grid.Row="2" Background="#1E293B" BorderBrush="#334155" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- Search box -->
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="🔍 SEARCH FINDINGS:" Foreground="#94A3B8" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBox Name="txtSearchScanner" Width="180" Height="26" Background="#0F172A" Foreground="#E2E8F0" BorderBrush="#334155" Padding="4,2,4,2" FontSize="11" VerticalContentAlignment="Center" Margin="0,0,15,0" />
+                            </StackPanel>
+                            
+                            <!-- Filter Severity buttons -->
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="FILTER BY SEVERITY:" Foreground="#94A3B8" FontSize="10" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <Button Name="btnFilterAll" Content="ALL" Width="55" Height="24" Style="{StaticResource SecondaryBtn}" FontSize="9" FontWeight="Bold" Margin="0,0,5,0" Cursor="Hand" />
+                                <Button Name="btnFilterCritHigh" Content="CRIT &amp; HIGH" Width="85" Height="24" Style="{StaticResource SecondaryBtn}" FontSize="9" FontWeight="Bold" Margin="0,0,5,0" Cursor="Hand" />
+                                <Button Name="btnFilterMedLow" Content="MED &amp; LOW" Width="80" Height="24" Style="{StaticResource SecondaryBtn}" FontSize="9" FontWeight="Bold" Margin="0,0,5,0" Cursor="Hand" />
+                                <Button Name="btnFilterInfo" Content="INFO ONLY" Width="80" Height="24" Style="{StaticResource SecondaryBtn}" FontSize="9" FontWeight="Bold" Cursor="Hand" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Results List (Row 3) -->
+                    <Border Grid.Row="3" Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="8" Padding="5">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
                             <StackPanel Name="panelScanResults" Margin="10">
                                 <!-- Dynamically loaded cards go here -->
@@ -1652,6 +1678,7 @@ function Add-FindingCard ($severity, $title, $description, $evidence, $manualCom
         Evidence = $evidence
         ManualCommand = $manualCommand
         QueryCommand = $queryCommand
+        Card = $card
     }
     Write-Log "INFO" "Audited finding added: [$severity] $title"
 }
@@ -1669,6 +1696,16 @@ function Run-VulnerabilityScan {
     Write-Log "INFO" "=================================================="
     Write-Log "INFO" "SNAKE TANK SECURITY AUDIT ENGINE INITIATED"
     Write-Log "INFO" "=================================================="
+    
+    # Reset filter UI
+    if ($txtSearchScanner) { $txtSearchScanner.Text = "" }
+    if ($btnFilterAll) {
+        $Script:ScannerFilterState = "All"
+        $btnFilterAll.Background = Get-Brush("#8B5CF6")
+        $btnFilterCritHigh.Background = Get-Brush("#1E293B")
+        $btnFilterMedLow.Background = Get-Brush("#1E293B")
+        $btnFilterInfo.Background = Get-Brush("#1E293B")
+    }
     
     # Clear previous results
     $panelScanResults.Children.Clear()
@@ -2482,6 +2519,69 @@ $btnQuickScan.Add_Click({
     Set-NavActive $btnNavScanner $gridScanner
     Run-VulnerabilityScan
 })
+
+# ------------------------------------------------------------------------------
+# SCANNER SEARCH & FILTER ENGINE
+# ------------------------------------------------------------------------------
+$Script:ScannerFilterState = "All"
+
+function Filter-ScannerFindings {
+    $search = $txtSearchScanner.Text.Trim().ToLower()
+    $filter = $Script:ScannerFilterState
+    
+    if (-not $Script:ScanFindings -or $Script:ScanFindings.Count -eq 0) { return }
+    
+    foreach ($finding in $Script:ScanFindings) {
+        if (-not $finding.Card) { continue }
+        
+        $matchesSearch = $true
+        if ($search) {
+            $matchesSearch = ($finding.Title.ToLower().Contains($search) -or $finding.Description.ToLower().Contains($search))
+        }
+        
+        $matchesSeverity = $true
+        if ($filter -eq "CritHigh") {
+            $matchesSeverity = ($finding.Severity -eq "Critical" -or $finding.Severity -eq "High")
+        } elseif ($filter -eq "MedLow") {
+            $matchesSeverity = ($finding.Severity -eq "Medium" -or $finding.Severity -eq "Low")
+        } elseif ($filter -eq "Info") {
+            $matchesSeverity = ($finding.Severity -eq "Info")
+        }
+        
+        if ($matchesSearch -and $matchesSeverity) {
+            $finding.Card.Visibility = [System.Windows.Visibility]::Visible
+        } else {
+            $finding.Card.Visibility = [System.Windows.Visibility]::Collapsed
+        }
+    }
+}
+
+function Set-ScannerFilterState ($state) {
+    $Script:ScannerFilterState = $state
+    
+    # Visual updates for selected state
+    $btnFilterAll.Background = Get-Brush("#1E293B")
+    $btnFilterCritHigh.Background = Get-Brush("#1E293B")
+    $btnFilterMedLow.Background = Get-Brush("#1E293B")
+    $btnFilterInfo.Background = Get-Brush("#1E293B")
+    
+    if ($state -eq "All") { $btnFilterAll.Background = Get-Brush("#8B5CF6") }
+    elseif ($state -eq "CritHigh") { $btnFilterCritHigh.Background = Get-Brush("#8B5CF6") }
+    elseif ($state -eq "MedLow") { $btnFilterMedLow.Background = Get-Brush("#8B5CF6") }
+    elseif ($state -eq "Info") { $btnFilterInfo.Background = Get-Brush("#8B5CF6") }
+    
+    Filter-ScannerFindings
+}
+
+# Bind events for filter bar
+$txtSearchScanner.Add_TextChanged({ Filter-ScannerFindings })
+$btnFilterAll.Add_Click({ Set-ScannerFilterState "All" })
+$btnFilterCritHigh.Add_Click({ Set-ScannerFilterState "CritHigh" })
+$btnFilterMedLow.Add_Click({ Set-ScannerFilterState "MedLow" })
+$btnFilterInfo.Add_Click({ Set-ScannerFilterState "Info" })
+
+# Initialize default selected color
+$btnFilterAll.Background = Get-Brush("#8B5CF6")
 
 # ------------------------------------------------------------------------------
 # 7. SYSTEM HARDENING ENGINE & LIVE VERIFICATION
