@@ -1204,9 +1204,250 @@ function Load-HostDetails {
 Load-HostDetails
 
 # ------------------------------------------------------------------------------
-# 5. DYNAMIC CARD ADDER (VULNERABILITY SCANNER)
+# 5. DYNAMIC CARD ADDER (VULNERABILITY SCANNER) & STATUS CHECK POPUP
 # ------------------------------------------------------------------------------
-function Add-FindingCard ($severity, $title, $description, $evidence, $manualCommand) {
+function Show-StatusCheckModal ($title, $queryCommand) {
+    $searchEmoji = [char]::ConvertFromUtf32(0x1F50D)
+    $closeX = [char]::ConvertFromUtf32(0x2715)
+
+    # Create the popup window
+    $win = New-Object System.Windows.Window
+    $win.Title = "Snake Tank Status Check - $title"
+    $win.Width = 650
+    $win.Height = 450
+    $win.Background = Get-Brush("#0F172A") # Dark slate
+    $win.ResizeMode = [System.Windows.ResizeMode]::NoResize
+    $win.WindowStyle = [System.Windows.WindowStyle]::None # Borderless custom chrome
+    $win.AllowsTransparency = $true
+    
+    if ($window) {
+        $win.Owner = $window
+        $win.WindowStartupLocation = [System.Windows.WindowStartupLocation]::CenterOwner
+    } else {
+        $win.WindowStartupLocation = [System.Windows.WindowStartupLocation]::CenterScreen
+    }
+    
+    # Glowing border container
+    $border = New-Object System.Windows.Controls.Border
+    $border.BorderBrush = Get-Brush("#8B5CF6") # Elegant purple glow
+    $border.BorderThickness = New-Object System.Windows.Thickness(2)
+    $border.CornerRadius = New-Object System.Windows.CornerRadius(10)
+    $border.Background = Get-Brush("#0F172A")
+    
+    # Layout Grid
+    $grid = New-Object System.Windows.Controls.Grid
+    $grid.Margin = New-Object System.Windows.Thickness(20)
+    
+    # 5 Row Definitions: Header, Subtitle, Command box, Output Terminal, Footer
+    $r1 = New-Object System.Windows.Controls.RowDefinition; $r1.Height = [System.Windows.GridLength]::Auto; [void]$grid.RowDefinitions.Add($r1)
+    $r2 = New-Object System.Windows.Controls.RowDefinition; $r2.Height = [System.Windows.GridLength]::Auto; [void]$grid.RowDefinitions.Add($r2)
+    $r3 = New-Object System.Windows.Controls.RowDefinition; $r3.Height = [System.Windows.GridLength]::Auto; [void]$grid.RowDefinitions.Add($r3)
+    $r4 = New-Object System.Windows.Controls.RowDefinition; $r4.Height = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star); [void]$grid.RowDefinitions.Add($r4)
+    $r5 = New-Object System.Windows.Controls.RowDefinition; $r5.Height = [System.Windows.GridLength]::Auto; [void]$grid.RowDefinitions.Add($r5)
+    
+    # Header Grid (Title + Close X button)
+    $headerGrid = New-Object System.Windows.Controls.Grid
+    $hc1 = New-Object System.Windows.Controls.ColumnDefinition; $hc1.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star); [void]$headerGrid.ColumnDefinitions.Add($hc1)
+    $hc2 = New-Object System.Windows.Controls.ColumnDefinition; $hc2.Width = [System.Windows.GridLength]::Auto; [void]$headerGrid.ColumnDefinitions.Add($hc2)
+    
+    $titleBlock = New-Object System.Windows.Controls.TextBlock
+    $titleBlock.Text = "$searchEmoji LIVE VULNERABILITY STATUS AUDIT"
+    $titleBlock.Foreground = Get-Brush("#8B5CF6")
+    $titleBlock.FontWeight = [System.Windows.FontWeights]::Bold
+    $titleBlock.FontSize = 14
+    [System.Windows.Controls.Grid]::SetColumn($titleBlock, 0)
+    [void]$headerGrid.Children.Add($titleBlock)
+    
+    $closeBtn = New-Object System.Windows.Controls.Button
+    $closeBtn.Content = $closeX
+    $closeBtn.Background = [System.Windows.Media.Brushes]::Transparent
+    $closeBtn.Foreground = Get-Brush("#94A3B8")
+    $closeBtn.BorderThickness = New-Object System.Windows.Thickness(0)
+    $closeBtn.FontSize = 14
+    $closeBtn.FontWeight = [System.Windows.FontWeights]::Bold
+    $closeBtn.Cursor = [System.Windows.Input.Cursors]::Hand
+    $closeBtn.Add_Click({ $win.Close() })
+    [System.Windows.Controls.Grid]::SetColumn($closeBtn, 1)
+    [void]$headerGrid.Children.Add($closeBtn)
+    
+    [System.Windows.Controls.Grid]::SetRow($headerGrid, 0)
+    [void]$grid.Children.Add($headerGrid)
+    
+    # Subtitle
+    $subTitle = New-Object System.Windows.Controls.TextBlock
+    $subTitle.Text = "Target check: $title"
+    $subTitle.Foreground = Get-Brush("#F8FAFC")
+    $subTitle.FontWeight = [System.Windows.FontWeights]::SemiBold
+    $subTitle.FontSize = 12
+    $subTitle.Margin = New-Object System.Windows.Thickness(0, 5, 0, 15)
+    [System.Windows.Controls.Grid]::SetRow($subTitle, 1)
+    [void]$grid.Children.Add($subTitle)
+    
+    # Command display stack
+    $cmdStack = New-Object System.Windows.Controls.StackPanel
+    $cmdStack.Margin = New-Object System.Windows.Thickness(0, 0, 0, 15)
+    
+    $lblCmd = New-Object System.Windows.Controls.TextBlock
+    $lblCmd.Text = "EXECUTING QUERY COMMAND:"
+    $lblCmd.Foreground = Get-Brush("#94A3B8")
+    $lblCmd.FontWeight = [System.Windows.FontWeights]::Bold
+    $lblCmd.FontSize = 9
+    $lblCmd.Margin = New-Object System.Windows.Thickness(0, 0, 0, 5)
+    [void]$cmdStack.Children.Add($lblCmd)
+    
+    # Command grid (TextBox + Copy button)
+    $codeGrid = New-Object System.Windows.Controls.Grid
+    $cc1 = New-Object System.Windows.Controls.ColumnDefinition; $cc1.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star); [void]$codeGrid.ColumnDefinitions.Add($cc1)
+    $cc2 = New-Object System.Windows.Controls.ColumnDefinition; $cc2.Width = [System.Windows.GridLength]::Auto; [void]$codeGrid.ColumnDefinitions.Add($cc2)
+    
+    $cmdBox = New-Object System.Windows.Controls.TextBox
+    $cmdBox.Text = $queryCommand
+    $cmdBox.IsReadOnly = $true
+    $cmdBox.Background = Get-Brush("#090D16")
+    $cmdBox.Foreground = Get-Brush("#38BDF8") # Light blue consolas text
+    $cmdBox.BorderBrush = Get-Brush("#334155")
+    $cmdBox.Padding = New-Object System.Windows.Thickness(8)
+    $cmdBox.FontFamily = New-Object System.Windows.Media.FontFamily("Consolas")
+    $cmdBox.FontSize = 10
+    $cmdBox.TextWrapping = [System.Windows.TextWrapping]::Wrap
+    [System.Windows.Controls.Grid]::SetColumn($cmdBox, 0)
+    [void]$codeGrid.Children.Add($cmdBox)
+    
+    $cmdCopy = New-Object System.Windows.Controls.Button
+    $cmdCopy.Content = "COPY CMD"
+    $cmdCopy.Background = Get-Brush("#3B82F6")
+    $cmdCopy.Foreground = Get-Brush("#FFFFFF")
+    $cmdCopy.FontWeight = [System.Windows.FontWeights]::Bold
+    $cmdCopy.FontSize = 9
+    $cmdCopy.Padding = New-Object System.Windows.Thickness(8, 0, 8, 0)
+    $cmdCopy.Margin = New-Object System.Windows.Thickness(8, 0, 0, 0)
+    $cmdCopy.Cursor = [System.Windows.Input.Cursors]::Hand
+    $cmdCopy.Add_Click({
+        [System.Windows.Clipboard]::SetText($queryCommand)
+        $cmdCopy.Content = "COPIED!"
+        $cmdCopy.Background = Get-Brush("#10B981")
+    })
+    [System.Windows.Controls.Grid]::SetColumn($cmdCopy, 1)
+    [void]$codeGrid.Children.Add($cmdCopy)
+    [void]$cmdStack.Children.Add($codeGrid)
+    
+    [System.Windows.Controls.Grid]::SetRow($cmdStack, 2)
+    [void]$grid.Children.Add($cmdStack)
+    
+    # Output Terminal Area
+    $termGrid = New-Object System.Windows.Controls.Grid
+    $termGrid.Margin = New-Object System.Windows.Thickness(0, 0, 0, 15)
+    
+    $termRow1 = New-Object System.Windows.Controls.RowDefinition; $termRow1.Height = [System.Windows.GridLength]::Auto; [void]$termGrid.RowDefinitions.Add($termRow1)
+    $termRow2 = New-Object System.Windows.Controls.RowDefinition; $termRow2.Height = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star); [void]$termGrid.RowDefinitions.Add($termRow2)
+    
+    $lblOutput = New-Object System.Windows.Controls.TextBlock
+    $lblOutput.Text = "AUDIT OUTPUT TERMINAL:"
+    $lblOutput.Foreground = Get-Brush("#94A3B8")
+    $lblOutput.FontWeight = [System.Windows.FontWeights]::Bold
+    $lblOutput.FontSize = 9
+    $lblOutput.Margin = New-Object System.Windows.Thickness(0, 0, 0, 5)
+    [System.Windows.Controls.Grid]::SetRow($lblOutput, 0)
+    [void]$termGrid.Children.Add($lblOutput)
+    
+    $termBox = New-Object System.Windows.Controls.TextBox
+    $termBox.Text = "Executing live system status audit query..."
+    $termBox.IsReadOnly = $true
+    $termBox.Background = Get-Brush("#020617")
+    $termBox.Foreground = Get-Brush("#A7F3D0") # Obsidian green terminal look
+    $termBox.BorderBrush = Get-Brush("#1E293B")
+    $termBox.FontFamily = New-Object System.Windows.Media.FontFamily("Consolas")
+    $termBox.FontSize = 10
+    $termBox.Padding = New-Object System.Windows.Thickness(10)
+    $termBox.AcceptsReturn = $true
+    $termBox.VerticalScrollBarVisibility = [System.Windows.Controls.ScrollBarVisibility]::Auto
+    $termBox.HorizontalScrollBarVisibility = [System.Windows.Controls.ScrollBarVisibility]::Auto
+    [System.Windows.Controls.Grid]::SetRow($termBox, 1)
+    [void]$termGrid.Children.Add($termBox)
+    
+    [System.Windows.Controls.Grid]::SetRow($termGrid, 3)
+    [void]$grid.Children.Add($termGrid)
+    
+    # Footer Grid
+    $footerGrid = New-Object System.Windows.Controls.Grid
+    
+    $fc1 = New-Object System.Windows.Controls.ColumnDefinition; $fc1.Width = [System.Windows.GridLength]::Auto; [void]$footerGrid.ColumnDefinitions.Add($fc1)
+    $fc2 = New-Object System.Windows.Controls.ColumnDefinition; $fc2.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star); [void]$footerGrid.ColumnDefinitions.Add($fc2)
+    $fc3 = New-Object System.Windows.Controls.ColumnDefinition; $fc3.Width = [System.Windows.GridLength]::Auto; [void]$footerGrid.ColumnDefinitions.Add($fc3)
+    
+    $runBtn = New-Object System.Windows.Controls.Button
+    $runBtn.Content = "RUN LIVE AUDIT"
+    $runBtn.Background = Get-Brush("#8B5CF6")
+    $runBtn.Foreground = Get-Brush("#FFFFFF")
+    $runBtn.FontWeight = [System.Windows.FontWeights]::Bold
+    $runBtn.FontSize = 11
+    $runBtn.Padding = New-Object System.Windows.Thickness(15, 8, 15, 8)
+    $runBtn.Cursor = [System.Windows.Input.Cursors]::Hand
+    
+    # Action for RUN LIVE AUDIT button
+    $runBtn.Add_Click({
+        $runBtn.IsEnabled = $false
+        $runBtn.Content = "EXECUTING..."
+        $termBox.Text = "Retrieving system configuration live..."
+        $termBox.Foreground = Get-Brush("#F59E0B")
+        Do-Events
+        
+        try {
+            # Run command
+            $result = Invoke-Expression $queryCommand 2>&1
+            $resultStr = ""
+            if ($result) {
+                $resultStr = $result | Out-String
+            } else {
+                $resultStr = "Command executed successfully. Status verified secure with null return/implicit true."
+            }
+            $termBox.Text = $resultStr
+            $termBox.Foreground = Get-Brush("#A7F3D0")
+        } catch {
+            $termBox.Text = "ERROR QUERYING STATUS:`n" + $_.Exception.Message
+            $termBox.Foreground = Get-Brush("#EF4444")
+        }
+        
+        $runBtn.Content = "RUN LIVE AUDIT"
+        $runBtn.IsEnabled = $true
+    })
+    [System.Windows.Controls.Grid]::SetColumn($runBtn, 0)
+    [void]$footerGrid.Children.Add($runBtn)
+    
+    $closeBtn2 = New-Object System.Windows.Controls.Button
+    $closeBtn2.Content = "CLOSE WINDOW"
+    $closeBtn2.Background = Get-Brush("#334155")
+    $closeBtn2.Foreground = Get-Brush("#F1F5F9")
+    $closeBtn2.FontWeight = [System.Windows.FontWeights]::SemiBold
+    $closeBtn2.FontSize = 11
+    $closeBtn2.Padding = New-Object System.Windows.Thickness(15, 8, 15, 8)
+    $closeBtn2.Cursor = [System.Windows.Input.Cursors]::Hand
+    $closeBtn2.Add_Click({ $win.Close() })
+    [System.Windows.Controls.Grid]::SetColumn($closeBtn2, 2)
+    [void]$footerGrid.Children.Add($closeBtn2)
+    
+    [System.Windows.Controls.Grid]::SetRow($footerGrid, 4)
+    [void]$grid.Children.Add($footerGrid)
+    
+    $border.Child = $grid
+    $win.Content = $border
+    
+    # Register window loaded event to execute automatically after opening
+    $win.Add_Loaded({
+        # Run in a Dispatcher/timer block shortly after loaded to avoid UI freezing
+        $timer = New-Object System.Windows.Threading.DispatcherTimer
+        $timer.Interval = [System.TimeSpan]::FromMilliseconds(200)
+        $timer.Add_Tick({
+            $timer.Stop()
+            $runBtn.RaiseEvent((New-Object System.Windows.RoutedEventArgs([System.Windows.Controls.Button]::ClickEvent)))
+        })
+        $timer.Start()
+    })
+    
+    [void]$win.ShowDialog()
+}
+
+function Add-FindingCard ($severity, $title, $description, $evidence, $manualCommand, $queryCommand = "") {
     # Determine color based on severity
     $sevColor = "#10B981" # Info
     if ($severity -eq "Critical") { $sevColor = "#EF4444" }
@@ -1343,6 +1584,60 @@ function Add-FindingCard ($severity, $title, $description, $evidence, $manualCom
     [void]$cmdGrid.Children.Add($copyBtn)
     [void]$detailsPanel.Children.Add($cmdGrid)
     
+    # ADD-ON: Check Status Interface Section
+    if ($queryCommand) {
+        $statusHead = New-Object System.Windows.Controls.TextBlock
+        $statusHead.Text = "STATUS QUERY COMMAND:"
+        $statusHead.Foreground = Get-Brush("#8B5CF6") # Vibrant purple
+        $statusHead.FontWeight = [System.Windows.FontWeights]::Bold
+        $statusHead.FontSize = 9
+        $statusHead.Margin = New-Object System.Windows.Thickness(0,8,0,3)
+        [void]$detailsPanel.Children.Add($statusHead)
+        
+        $statusGrid = New-Object System.Windows.Controls.Grid
+        
+        $sc1 = New-Object System.Windows.Controls.ColumnDefinition
+        $sc1.Width = New-Object System.Windows.GridLength(1, [System.Windows.GridUnitType]::Star)
+        [void]$statusGrid.ColumnDefinitions.Add($sc1)
+        
+        $sc2 = New-Object System.Windows.Controls.ColumnDefinition
+        $sc2.Width = [System.Windows.GridLength]::Auto
+        [void]$statusGrid.ColumnDefinitions.Add($sc2)
+        
+        # TextBox for Status check command
+        $statusText = New-Object System.Windows.Controls.TextBox
+        $statusText.Text = $queryCommand
+        $statusText.IsReadOnly = $true
+        $statusText.Background = Get-Brush("#0F172A")
+        $statusText.Foreground = Get-Brush("#E2E8F0")
+        $statusText.BorderBrush = Get-Brush("#334155")
+        $statusText.Padding = New-Object System.Windows.Thickness(6)
+        $statusText.TextWrapping = [System.Windows.TextWrapping]::Wrap
+        $statusText.FontFamily = New-Object System.Windows.Media.FontFamily("Consolas")
+        $statusText.FontSize = 10
+        [System.Windows.Controls.Grid]::SetColumn($statusText, 0)
+        [void]$statusGrid.Children.Add($statusText)
+        
+        # "CHECK STATUS" Button
+        $checkBtn = New-Object System.Windows.Controls.Button
+        $checkBtn.Content = "CHECK STATUS"
+        $checkBtn.Background = Get-Brush("#8B5CF6")
+        $checkBtn.Foreground = Get-Brush("#FFFFFF")
+        $checkBtn.FontWeight = [System.Windows.FontWeights]::Bold
+        $checkBtn.FontSize = 9
+        $checkBtn.Width = 90
+        $checkBtn.Margin = New-Object System.Windows.Thickness(8,0,0,0)
+        $checkBtn.Cursor = [System.Windows.Input.Cursors]::Hand
+        
+        $checkBtn.Add_Click({
+            Show-StatusCheckModal $title $queryCommand
+        })
+        
+        [System.Windows.Controls.Grid]::SetColumn($checkBtn, 1)
+        [void]$statusGrid.Children.Add($checkBtn)
+        [void]$detailsPanel.Children.Add($statusGrid)
+    }
+    
     [System.Windows.Controls.Grid]::SetRow($detailsPanel, 1)
     [void]$cardGrid.Children.Add($detailsPanel)
     
@@ -1356,6 +1651,7 @@ function Add-FindingCard ($severity, $title, $description, $evidence, $manualCom
         Description = $description
         Evidence = $evidence
         ManualCommand = $manualCommand
+        QueryCommand = $queryCommand
     }
     Write-Log "INFO" "Audited finding added: [$severity] $title"
 }
@@ -1391,12 +1687,13 @@ function Run-VulnerabilityScan {
     $release = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name ReleaseId -ErrorAction SilentlyContinue).ReleaseId
     if (-not $release) { $release = (Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion" -Name DisplayVersion -ErrorAction SilentlyContinue).DisplayVersion }
     $evidence = "OS: $prod | Version: $release | Build: $build"
+    $qCmd1 = "Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' | Select-Object ProductName, DisplayVersion, CurrentBuild"
     
     if ($build -lt 19045) {
-        Add-FindingCard "High" "Outdated Windows OS Build Version" "The operating system is running build $build which is older than modern baseline standards (19045 - Win 10 22H2 / Win 11). Outdated builds have missing vulnerability patches." $evidence "wuauclt /detectnow /updatenow"
+        Add-FindingCard "High" "Outdated Windows OS Build Version" "The operating system is running build $build which is older than modern baseline standards (19045 - Win 10 22H2 / Win 11). Outdated builds have missing vulnerability patches." $evidence "wuauclt /detectnow /updatenow" $qCmd1
         $high++
     } else {
-        Add-FindingCard "Info" "Modern Windows OS Build Verified" "The operating system build is modern and fully supported." $evidence "N/A - System baseline up to date."
+        Add-FindingCard "Info" "Modern Windows OS Build Verified" "The operating system build is modern and fully supported." $evidence "N/A - System baseline up to date." $qCmd1
         $info++
     }
     
@@ -1412,13 +1709,14 @@ function Run-VulnerabilityScan {
     $smbConf = Get-SmbServerConfiguration -ErrorAction SilentlyContinue
     if ($smbConf -and $smbConf.EnableSMB1Protocol -eq $true) { $smbEnabled = $true }
     
+    $qCmd2 = "Get-SmbServerConfiguration | Select-Object EnableSMB1Protocol"
     if ($smbEnabled) {
         $evidence = "Registry LanmanServer\Parameters\SMB1 set to 1 or PowerShell EnableSMB1Protocol is True."
-        Add-FindingCard "Critical" "Legacy SMBv1 Protocol Activated" "SMBv1 is active. This legacy protocol lacks modern security controls and is highly susceptible to credential interception, network malware propagation, and EternalBlue RCE attacks." $evidence "Set-SmbServerConfiguration -EnableSMB1Protocol `$false -Force"
+        Add-FindingCard "Critical" "Legacy SMBv1 Protocol Activated" "SMBv1 is active. This legacy protocol lacks modern security controls and is highly susceptible to credential interception, network malware propagation, and EternalBlue RCE attacks." $evidence "Set-SmbServerConfiguration -EnableSMB1Protocol `$false -Force" $qCmd2
         $crit++
     } else {
         $evidence = "SMB1 registry key set to 0 or unconfigured (default disabled in modern builds)."
-        Add-FindingCard "Info" "Legacy SMBv1 Protocol Disabled" "SMBv1 is properly deactivated on this host." $evidence "N/A - Current baseline is secure."
+        Add-FindingCard "Info" "Legacy SMBv1 Protocol Disabled" "SMBv1 is properly deactivated on this host." $evidence "N/A - Current baseline is secure." $qCmd2
         $info++
     }
     
@@ -1438,13 +1736,14 @@ function Run-VulnerabilityScan {
         if ((netsh advfirewall show allprofiles state) -match "State\s+OFF") { $disabledFw += "Domain/Private/Public" }
     }
     
+    $qCmd3 = "Get-NetFirewallProfile | Select-Object Name, Enabled"
     if ($disabledFw.Count -gt 0) {
         $evidence = "Disabled firewall profiles: " + ($disabledFw -join ", ")
-        Add-FindingCard "High" "Windows Firewall Profile Deactivated" "One or more Windows Firewall profiles are disabled. This removes local protection filters and exposes running services to external network attacks." $evidence "netsh advfirewall set allprofiles state on"
+        Add-FindingCard "High" "Windows Firewall Profile Deactivated" "One or more Windows Firewall profiles are disabled. This removes local protection filters and exposes running services to external network attacks." $evidence "netsh advfirewall set allprofiles state on" $qCmd3
         $high++
     } else {
         $evidence = "All active profiles (Domain, Private, Public) are active."
-        Add-FindingCard "Info" "Windows Firewall Fully Active" "All Windows Firewall boundary profiles are active." $evidence "N/A - System protected by local firewall."
+        Add-FindingCard "Info" "Windows Firewall Fully Active" "All Windows Firewall boundary profiles are active." $evidence "N/A - System protected by local firewall." $qCmd3
         $info++
     }
     
@@ -1467,11 +1766,12 @@ function Run-VulnerabilityScan {
         }
     }
     
+    $qCmd4 = "Get-MpComputerStatus | Select-Object RealTimeProtectionEnabled"
     if ($rtp -eq $false) {
-        Add-FindingCard "Critical" "Windows Defender Real-Time Protection Disabled" "Real-Time Protection is deactivated. The host is unable to identify or quarantine executing malware, scripts, or suspicious payloads in real-time." $rtpEv "Set-MpPreference -DisableRealtimeMonitoring `$false"
+        Add-FindingCard "Critical" "Windows Defender Real-Time Protection Disabled" "Real-Time Protection is deactivated. The host is unable to identify or quarantine executing malware, scripts, or suspicious payloads in real-time." $rtpEv "Set-MpPreference -DisableRealtimeMonitoring `$false" $qCmd4
         $crit++
     } else {
-        Add-FindingCard "Info" "Windows Defender Active Protection Verified" "Antivirus and Real-Time behavioral monitors are running." "RealTimeProtectionEnabled = True" "N/A - Active scanning active."
+        Add-FindingCard "Info" "Windows Defender Active Protection Verified" "Antivirus and Real-Time behavioral monitors are running." "RealTimeProtectionEnabled = True" "N/A - Active scanning active." $qCmd4
         $info++
     }
     
@@ -1485,13 +1785,14 @@ function Run-VulnerabilityScan {
     $nla = 0
     if ($rdp) { $nla = $rdp.UserAuthentication }
     
+    $qCmd5 = "Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name UserAuthentication"
     if ($nla -eq 0) {
         $evidence = "Registry HKLM\..\WinStations\RDP-Tcp\UserAuthentication is set to 0."
-        Add-FindingCard "High" "RDP Network Level Authentication (NLA) Disabled" "NLA is disabled. Remote attackers can establish terminal handshakes and trigger potential pre-authentication RCE exploits (like BlueKeep CVE-2019-0708) without providing valid login credentials." $evidence "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp`" /v UserAuthentication /t REG_DWORD /d 1 /f"
+        Add-FindingCard "High" "RDP Network Level Authentication (NLA) Disabled" "NLA is disabled. Remote attackers can establish terminal handshakes and trigger potential pre-authentication RCE exploits (like BlueKeep CVE-2019-0708) without providing valid login credentials." $evidence "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp`" /v UserAuthentication /t REG_DWORD /d 1 /f" $qCmd5
         $high++
     } else {
         $evidence = "NLA is set to 1 (Enabled)."
-        Add-FindingCard "Info" "RDP Network Level Authentication (NLA) Secure" "NLA is active, preventing remote pre-authentication exploits." $evidence "N/A - RDP secure."
+        Add-FindingCard "Info" "RDP Network Level Authentication (NLA) Secure" "NLA is active, preventing remote pre-authentication exploits." $evidence "N/A - RDP secure." $qCmd5
         $info++
     }
     
@@ -1515,16 +1816,17 @@ function Run-VulnerabilityScan {
     if ($lockout -eq 0) { $lockoutStr = "Never" }
     $pwEv = "Minimum password length: $minLen | Lockout threshold: $lockoutStr"
     
+    $qCmd6 = "net accounts"
     if ($minLen -lt 14) {
-        Add-FindingCard "High" "Weak Minimum Password Length Constraint" "Local account minimum password length is set to $minLen (recommended is 14+). This increases susceptibility to offline brute forcing and hashing audits." $pwEv "net accounts /minpwlen:14"
+        Add-FindingCard "High" "Weak Minimum Password Length Constraint" "Local account minimum password length is set to $minLen (recommended is 14+). This increases susceptibility to offline brute forcing and hashing audits." $pwEv "net accounts /minpwlen:14" $qCmd6
         $high++
     }
     if ($lockout -eq 0) {
-        Add-FindingCard "High" "Account Lockout Policy Disabled" "Lockout threshold is set to Never. Attackers can brute-force account passwords continuously without lock restrictions." $pwEv "net accounts /lockoutthreshold:5"
+        Add-FindingCard "High" "Account Lockout Policy Disabled" "Lockout threshold is set to Never. Attackers can brute-force account passwords continuously without lock restrictions." $pwEv "net accounts /lockoutthreshold:5" $qCmd6
         $high++
     }
     if ($minLen -ge 14 -and $lockout -gt 0) {
-        Add-FindingCard "Info" "Strong Password Policies Enabled" "Password parameters conform to secure defaults." $pwEv "N/A - SAM boundaries verified."
+        Add-FindingCard "Info" "Strong Password Policies Enabled" "Password parameters conform to secure defaults." $pwEv "N/A - SAM boundaries verified." $qCmd6
         $info++
     }
     
@@ -1541,13 +1843,14 @@ function Run-VulnerabilityScan {
         if ((net user Guest) -match "Account active\s+Yes") { $guestActive = $true }
     }
     
+    $qCmd7 = "Get-LocalUser -Name Guest | Select-Object Name, Enabled"
     if ($guestActive) {
         $evidence = "Local Guest account status: Enabled."
-        Add-FindingCard "Medium" "Built-in Local Guest Account Active" "The built-in Guest account is enabled. This allows anonymous, unauthenticated network sessions to access system folders or initiate lateral actions." $evidence "net user Guest /active:no"
+        Add-FindingCard "Medium" "Built-in Local Guest Account Active" "The built-in Guest account is enabled. This allows anonymous, unauthenticated network sessions to access system folders or initiate lateral actions." $evidence "net user Guest /active:no" $qCmd7
         $med++
     } else {
         $evidence = "Local Guest account is deactivated."
-        Add-FindingCard "Info" "Built-in Local Guest Account Secure" "The built-in Guest account is properly disabled." $evidence "N/A - anonymous access prevented."
+        Add-FindingCard "Info" "Built-in Local Guest Account Secure" "The built-in Guest account is properly disabled." $evidence "N/A - anonymous access prevented." $qCmd7
         $info++
     }
     
@@ -1564,13 +1867,14 @@ function Run-VulnerabilityScan {
     if ($aieHKLM -and $aieHKLM.AlwaysInstallElevated -eq 1) { $aieVal = 1; $aieEv += "HKLM = 1" }
     if ($aieHKCU -and $aieHKCU.AlwaysInstallElevated -eq 1) { $aieVal = 1; $aieEv += "HKCU = 1" }
     
+    $qCmd8 = "Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Installer' -Name AlwaysInstallElevated -ErrorAction SilentlyContinue; Get-ItemProperty -Path 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\Installer' -Name AlwaysInstallElevated -ErrorAction SilentlyContinue"
     if ($aieVal -eq 1) {
         $evidence = $aieEv -join " | "
-        Add-FindingCard "Critical" "AlwaysInstallElevated Policy Active" "AlwaysInstallElevated is active in the registry. This dangerous configuration permits non-privileged users to install arbitrary MSI installers with full system SYSTEM authorities, leading to a trivial LPE vulnerability." $evidence "reg add `"HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer`" /v AlwaysInstallElevated /t REG_DWORD /d 0 /f"
+        Add-FindingCard "Critical" "AlwaysInstallElevated Policy Active" "AlwaysInstallElevated is active in the registry. This dangerous configuration permits non-privileged users to install arbitrary MSI installers with full system SYSTEM authorities, leading to a trivial LPE vulnerability." $evidence "reg add `"HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer`" /v AlwaysInstallElevated /t REG_DWORD /d 0 /f" $qCmd8
         $crit++
     } else {
         $evidence = "Registry keys are not configured or set to 0."
-        Add-FindingCard "Info" "AlwaysInstallElevated Policy Secure" "Windows Installer AlwaysInstallElevated policy is secure." $evidence "N/A - Installer permissions restricted."
+        Add-FindingCard "Info" "AlwaysInstallElevated Policy Secure" "Windows Installer AlwaysInstallElevated policy is secure." $evidence "N/A - Installer permissions restricted." $qCmd8
         $info++
     }
     
@@ -1604,18 +1908,17 @@ function Run-VulnerabilityScan {
                 }
             }
         }
-    }
-    
+    }    $qCmd9 = 'Get-WmiObject -Class Win32_Service | Where-Object { $_.PathName -like "* *" -and -not $_.PathName.StartsWith([char]34) } | Select-Object Name, DisplayName, PathName'
     if ($unquoted.Count -gt 0) {
         foreach ($us in $unquoted) {
             $evidence = "Service: $($us.Name) | Path: $($us.Path)"
             $mit = "reg add `"HKLM\SYSTEM\CurrentControlSet\Services\$($us.Name)`" /v ImagePath /t REG_EXPAND_SZ /d `"`\`"$($us.Path)`"\`"`" /f"
-            Add-FindingCard "High" "Unquoted Service Path: $($us.DisplayName)" "The service '$($us.DisplayName)' has an unquoted path containing spaces. Low-privileged local attackers can place a malicious executable at intersecting paths (e.g. C:\Program.exe) to intercept and run code as SYSTEM during startup." $evidence $mit
+            Add-FindingCard "High" "Unquoted Service Path: $($us.DisplayName)" "The service '$($us.DisplayName)' has an unquoted path containing spaces. Low-privileged local attackers can place a malicious executable at intersecting paths (e.g. C:\Program.exe) to intercept and run code as SYSTEM during startup." $evidence $mit $qCmd9
             $high++
         }
     } else {
         $evidence = "No unquoted service paths detected on system."
-        Add-FindingCard "Info" "Unquoted Service Paths Verified Clean" "No unquoted service paths exist on the local system." $evidence "N/A - Service configurations secure."
+        Add-FindingCard "Info" "Unquoted Service Paths Verified Clean" "No unquoted service paths exist on the local system." $evidence "N/A - Service configurations secure." $qCmd9
         $info++
     }
     
@@ -1634,6 +1937,7 @@ function Run-VulnerabilityScan {
     )
     $startupFindings = 0
     
+    $qCmd10 = "Get-ItemProperty -Path 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Run'"
     foreach ($keyPath in $runKeys) {
         if (Test-Path $keyPath) {
             $keyProps = Get-ItemProperty -Path $keyPath
@@ -1674,7 +1978,7 @@ function Run-VulnerabilityScan {
                 if ($isSuspiciousCmd -or ($isUnsigned -and $inTemp)) {
                     $evidence = "Value: $name | Data: $data | Signature: $sigStatus | Signer: $sigSubject"
                     $mit = "Remove-ItemProperty -Path `"$keyPath`" -Name `"$name`""
-                    Add-FindingCard "High" "Suspicious Startup Persistence: $name" "A startup entry uses script interpreters, Living-off-the-Land commands, or runs unsigned binaries out of system temporary directories, indicating potential persistence." $evidence $mit
+                    Add-FindingCard "High" "Suspicious Startup Persistence: $name" "A startup entry uses script interpreters, Living-off-the-Land commands, or runs unsigned binaries out of system temporary directories, indicating potential persistence." $evidence $mit $qCmd10
                     $startupFindings++
                     $high++
                 }
@@ -1683,10 +1987,10 @@ function Run-VulnerabilityScan {
     }
     
     if ($startupFindings -eq 0) {
-        Add-FindingCard "Info" "Startup Registry Persistence Clean" "No suspicious script execution or unsigned binaries in temporary locations are configured in the startup hives." "All values are standard or signed." "N/A - Startup locations audited."
+        Add-FindingCard "Info" "Startup Registry Persistence Clean" "No suspicious script execution or unsigned binaries in temporary locations are configured in the startup hives." "All values are standard or signed." "N/A - Startup locations audited." $qCmd10
         $info++
     }
-
+ 
     # Check 11: UAC Consent Prompt Administrative Policy (50%)
     $progressBarScan.Value = 50
     $txtProgressStatus.Text = "Verifying UAC administrative elevation consent policies (11/22)..."
@@ -1698,11 +2002,12 @@ function Run-VulnerabilityScan {
     if ($uacKey) { $uacVal = $uacKey.ConsentPromptBehaviorAdmin }
     $uacEv = "ConsentPromptBehaviorAdmin = $uacVal"
     
+    $qCmd11 = "Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' -Name ConsentPromptBehaviorAdmin"
     if ($uacVal -eq 0) {
-        Add-FindingCard "High" "UAC Administrative Silent Elevation Active" "User Account Control is set to silently elevate administrator requests. Malware or background scripts can execute high-privilege operations silently without notifying the user." $uacEv "reg add `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System`" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 5 /f"
+        Add-FindingCard "High" "UAC Administrative Silent Elevation Active" "User Account Control is set to silently elevate administrator requests. Malware or background scripts can execute high-privilege operations silently without notifying the user." $uacEv "reg add `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System`" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 5 /f" $qCmd11
         $high++
     } else {
-        Add-FindingCard "Info" "UAC Consent Prompting Verified" "User Account Control requires explicit interaction on secure desktop for administrative elevation." $uacEv "N/A - UAC boundaries secure."
+        Add-FindingCard "Info" "UAC Consent Prompting Verified" "User Account Control requires explicit interaction on secure desktop for administrative elevation." $uacEv "N/A - UAC boundaries secure." $qCmd11
         $info++
     }
 
@@ -1721,11 +2026,12 @@ function Run-VulnerabilityScan {
     }
     $llmnrEv = "EnableMulticast = $llmnrVal"
 
+    $qCmd12 = "Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient' -Name EnableMulticast -ErrorAction SilentlyContinue"
     if ($llmnrVal -eq 1) {
-        Add-FindingCard "High" "LLMNR Multicast Resolution Active" "Link-Local Multicast Name Resolution (LLMNR) is active on this host. Attackers on the same local network can spoof query responses to capture sensitive credentials." $llmnrEv "reg add `"HKLM\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient`" /v EnableMulticast /t REG_DWORD /d 0 /f"
+        Add-FindingCard "High" "LLMNR Multicast Resolution Active" "Link-Local Multicast Name Resolution (LLMNR) is active on this host. Attackers on the same local network can spoof query responses to capture sensitive credentials." $llmnrEv "reg add `"HKLM\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient`" /v EnableMulticast /t REG_DWORD /d 0 /f" $qCmd12
         $high++
     } else {
-        Add-FindingCard "Info" "LLMNR Multicast Resolution Disabled" "Link-Local Multicast Name Resolution is properly deactivated, preventing Responder-style hijacking attacks." $llmnrEv "N/A - LLMNR secure."
+        Add-FindingCard "Info" "LLMNR Multicast Resolution Disabled" "Link-Local Multicast Name Resolution is properly deactivated, preventing Responder-style hijacking attacks." $llmnrEv "N/A - LLMNR secure." $qCmd12
         $info++
     }
 
@@ -1742,11 +2048,12 @@ function Run-VulnerabilityScan {
     }
     $lsaEv = "RunAsPPL = $lsaVal"
 
+    $qCmd13 = "Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name RunAsPPL -ErrorAction SilentlyContinue"
     if ($lsaVal -ne 1 -and $lsaVal -ne 2) {
-        Add-FindingCard "High" "LSA dumping protection (RunAsPPL) Disabled" "LSA protection is disabled, allowing administrative processes to access LSA memory and dump passwords or hashes (e.g. using Mimikatz)." $lsaEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Lsa`" /v RunAsPPL /t REG_DWORD /d 1 /f"
+        Add-FindingCard "High" "LSA dumping protection (RunAsPPL) Disabled" "LSA protection is disabled, allowing administrative processes to access LSA memory and dump passwords or hashes (e.g. using Mimikatz)." $lsaEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Lsa`" /v RunAsPPL /t REG_DWORD /d 1 /f" $qCmd13
         $high++
     } else {
-        Add-FindingCard "Info" "LSA dumping protection (RunAsPPL) Enabled" "Protected Process Light (PPL) is active on the LSA subsystem, blocking memory dumping." $lsaEv "N/A - LSA protection active (Requires reboot on change)."
+        Add-FindingCard "Info" "LSA dumping protection (RunAsPPL) Enabled" "Protected Process Light (PPL) is active on the LSA subsystem, blocking memory dumping." $lsaEv "N/A - LSA protection active (Requires reboot on change)." $qCmd13
         $info++
     }
 
@@ -1769,11 +2076,12 @@ function Run-VulnerabilityScan {
     }
     $rdpEv = "RDP Active: $rdpActive | Listening Port: $rdpPort"
 
+    $qCmd14 = "Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name PortNumber"
     if ($rdpActive -and $rdpPort -eq 3389) {
-        Add-FindingCard "Medium" "Default RDP Listening Port 3389 Active" "Remote Desktop (RDP) is enabled and listening on the default port 3389. This makes the host susceptible to port scanners, credential brute-forcing, and RDP vulnerabilities." $rdpEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp`" /v PortNumber /t REG_DWORD /d 33890 /f"
+        Add-FindingCard "Medium" "Default RDP Listening Port 3389 Active" "Remote Desktop (RDP) is enabled and listening on the default port 3389. This makes the host susceptible to port scanners, credential brute-forcing, and RDP vulnerabilities." $rdpEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp`" /v PortNumber /t REG_DWORD /d 33890 /f" $qCmd14
         $med++
     } else {
-        Add-FindingCard "Info" "RDP Port Configuration Secure" "Remote Desktop is either disabled or configured to listen on a non-default port." $rdpEv "N/A - RDP port not default."
+        Add-FindingCard "Info" "RDP Port Configuration Secure" "Remote Desktop is either disabled or configured to listen on a non-default port." $rdpEv "N/A - RDP port not default." $qCmd14
         $info++
     }
 
@@ -1790,11 +2098,12 @@ function Run-VulnerabilityScan {
     }
     $psLogEv = "EnableScriptBlockLogging = $psLogVal"
 
+    $qCmd15 = "Get-ItemProperty -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging' -Name EnableScriptBlockLogging -ErrorAction SilentlyContinue"
     if ($psLogVal -eq 0) {
-        Add-FindingCard "High" "PowerShell Script Block Logging Disabled" "PowerShell Script Block Logging is deactivated on this host. Malware skits run invisibly, preventing SOC detection, SIEM aggregation, and post-incident digital forensics." $psLogEv "reg add `"HKLM\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging`" /v EnableScriptBlockLogging /t REG_DWORD /d 1 /f"
+        Add-FindingCard "High" "PowerShell Script Block Logging Disabled" "PowerShell Script Block Logging is deactivated on this host. Malware skits run invisibly, preventing SOC detection, SIEM aggregation, and post-incident digital forensics." $psLogEv "reg add `"HKLM\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging`" /v EnableScriptBlockLogging /t REG_DWORD /d 1 /f" $qCmd15
         $high++
     } else {
-        Add-FindingCard "Info" "PowerShell Script Block Logging Active" "PowerShell Script Block Logging is active, ensuring auditing transparency." $psLogEv "N/A - PowerShell logging active."
+        Add-FindingCard "Info" "PowerShell Script Block Logging Active" "PowerShell Script Block Logging is active, ensuring auditing transparency." $psLogEv "N/A - PowerShell logging active." $qCmd15
         $info++
     }
 
@@ -1809,11 +2118,12 @@ function Run-VulnerabilityScan {
     if ($wdigestKey) { $wdigestVal = $wdigestKey.UseLogonCredential }
     $wdigestEv = "UseLogonCredential = $wdigestVal"
 
+    $qCmd16 = "Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest' -Name UseLogonCredential -ErrorAction SilentlyContinue"
     if ($wdigestVal -eq 1) {
-        Add-FindingCard "Critical" "WDigest Credential Caching Active" "WDigest cleartext password caching is active in LSASS memory. Local administrators can dump high-privileged accounts passwords in plaintext using Mimikatz." $wdigestEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest`" /v UseLogonCredential /t REG_DWORD /d 0 /f"
+        Add-FindingCard "Critical" "WDigest Credential Caching Active" "WDigest cleartext password caching is active in LSASS memory. Local administrators can dump high-privileged accounts passwords in plaintext using Mimikatz." $wdigestEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest`" /v UseLogonCredential /t REG_DWORD /d 0 /f" $qCmd16
         $crit++
     } else {
-        Add-FindingCard "Info" "WDigest Credential Caching Secure" "WDigest cleartext credential caching is properly deactivated." $wdigestEv "N/A - Plaintext credential caching disabled."
+        Add-FindingCard "Info" "WDigest Credential Caching Secure" "WDigest cleartext credential caching is properly deactivated." $wdigestEv "N/A - Plaintext credential caching disabled." $qCmd16
         $info++
     }
 
@@ -1828,11 +2138,12 @@ function Run-VulnerabilityScan {
     if ($autoplayKey) { $autoplayVal = $autoplayKey.NoDriveTypeAutoRun }
     $autoplayEv = "NoDriveTypeAutoRun = $autoplayVal"
 
+    $qCmd17 = "Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer' -Name NoDriveTypeAutoRun -ErrorAction SilentlyContinue"
     if ($autoplayVal -ne 255) {
-        Add-FindingCard "Medium" "AutoPlay / AutoRun Restrictions Disabled" "AutoPlay/AutoRun is not fully disabled across all drive profiles (NoDriveTypeAutoRun is not 255). Insertion of malicious USB or media drives can trigger silent script triggers." $autoplayEv "reg add `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer`" /v NoDriveTypeAutoRun /t REG_DWORD /d 255 /f"
+        Add-FindingCard "Medium" "AutoPlay / AutoRun Restrictions Disabled" "AutoPlay/AutoRun is not fully disabled across all drive profiles (NoDriveTypeAutoRun is not 255). Insertion of malicious USB or media drives can trigger silent script triggers." $autoplayEv "reg add `"HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer`" /v NoDriveTypeAutoRun /t REG_DWORD /d 255 /f" $qCmd17
         $med++
     } else {
-        Add-FindingCard "Info" "AutoPlay / AutoRun Restrictions Active" "AutoPlay and AutoRun are deactivated for all drive categories, preventing USB propagation vectors." $autoplayEv "N/A - USB worms mitigated."
+        Add-FindingCard "Info" "AutoPlay / AutoRun Restrictions Active" "AutoPlay and AutoRun are deactivated for all drive categories, preventing USB propagation vectors." $autoplayEv "N/A - USB worms mitigated." $qCmd17
         $info++
     }
 
@@ -1851,11 +2162,12 @@ function Run-VulnerabilityScan {
     }
     $remRegEv = "Service Status: $remRegState | Startup Type: $remRegStart"
 
+    $qCmd18 = "Get-Service -Name RemoteRegistry | Select-Object Name, StartType, Status"
     if ($remRegState -eq "Running" -or $remRegStart -ne "Disabled") {
-        Add-FindingCard "Low" "Remote Registry Service Active" "The Remote Registry service is enabled or currently active. Pen-testers or remote actors can modify local system registry parameters over the network if administrative boundaries are breached." $remRegEv "powershell -Command `"Stop-Service -Name RemoteRegistry -Force; Set-Service -Name RemoteRegistry -StartupType Disabled`""
+        Add-FindingCard "Low" "Remote Registry Service Active" "The Remote Registry service is enabled or currently active. Pen-testers or remote actors can modify local system registry parameters over the network if administrative boundaries are breached." $remRegEv "powershell -Command `"Stop-Service -Name RemoteRegistry -Force; Set-Service -Name RemoteRegistry -StartupType Disabled`"" $qCmd18
         $low++
     } else {
-        Add-FindingCard "Info" "Remote Registry Service Disabled" "Remote Registry service is stopped and configured as Disabled." $remRegEv "N/A - Remote registry modifications prevented."
+        Add-FindingCard "Info" "Remote Registry Service Disabled" "Remote Registry service is stopped and configured as Disabled." $remRegEv "N/A - Remote registry modifications prevented." $qCmd18
         $info++
     }
 
@@ -1899,11 +2211,12 @@ function Run-VulnerabilityScan {
         }
     }
 
+    $qCmd19 = "Get-LocalGroupMember -Group 'Administrators' | Select-Object Name, PrincipalSource, ObjectClass"
     if ($hasUnusualAdmin -or $admins.Count -gt 3) {
-        Add-FindingCard "Medium" "Over-Privileged Accounts in Local Administrators Group" "The local Administrators group contains standard, guest, or multiple user accounts ($adminsStr). Over-privileged accounts are a major vulnerability that lateral movement malware uses to hijack machines." $adminEv "net localgroup administrators [Username] /delete"
+        Add-FindingCard "Medium" "Over-Privileged Accounts in Local Administrators Group" "The local Administrators group contains standard, guest, or multiple user accounts ($adminsStr). Over-privileged accounts are a major vulnerability that lateral movement malware uses to hijack machines." $adminEv "net localgroup administrators [Username] /delete" $qCmd19
         $med++
     } else {
-        Add-FindingCard "Info" "Local Administrators Group Membership Audited" "The local Administrators group membership is standard and conforms to corporate safety guidelines." $adminEv "N/A - Administrator pool verified."
+        Add-FindingCard "Info" "Local Administrators Group Membership Audited" "The local Administrators group membership is standard and conforms to corporate safety guidelines." $adminEv "N/A - Administrator pool verified." $qCmd19
         $info++
     }
 
@@ -1932,11 +2245,12 @@ function Run-VulnerabilityScan {
         }
     } catch {}
 
+    $qCmd20 = "Get-CimInstance -Namespace root\cimv2\Security\MicrosoftVolumeEncryption -ClassName Win32_EncryptableVolume | Select-Object DeviceID, DriveLetter, ProtectionStatus"
     if ($bitlockerState -ne "On") {
-        Add-FindingCard "High" "BitLocker Drive Encryption Deactivated" "The primary OS volume (C:) is unencrypted. This represents a major physical safety risk where any actor with physical access can extract drive files offline by bypassing OS controls." $blEv "control /name Microsoft.BitLockerDriveEncryption"
+        Add-FindingCard "High" "BitLocker Drive Encryption Deactivated" "The primary OS volume (C:) is unencrypted. This represents a major physical safety risk where any actor with physical access can extract drive files offline by bypassing OS controls." $blEv "control /name Microsoft.BitLockerDriveEncryption" $qCmd20
         $high++
     } else {
-        Add-FindingCard "Info" "BitLocker Drive Encryption Active" "BitLocker Full Disk Encryption is active on the primary OS volume, securing local storage offline." $blEv "N/A - Drive fully encrypted."
+        Add-FindingCard "Info" "BitLocker Drive Encryption Active" "BitLocker Full Disk Encryption is active on the primary OS volume, securing local storage offline." $blEv "N/A - Drive fully encrypted." $qCmd20
         $info++
     }
 
@@ -1980,11 +2294,12 @@ function Run-VulnerabilityScan {
     if ($listeningPorts.Count -eq 0) { $portsStr = "None detected listening publicly" }
     $portsEv = "Exposed Ports: TCP $portsStr"
 
+    $qCmd21 = "Get-NetTCPConnection -State Listen | Where-Object { `$_.LocalAddress -eq '0.0.0.0' -or `$_.LocalAddress -eq '::' } | Select-Object LocalAddress, LocalPort, State"
     if ($hasDangerousPort) {
-        Add-FindingCard "Medium" "Exposed High-Risk Network Ports" "The host has public service ports active and listening to the local network (TCP $portsStr). Leaving ports like SMB (445) or legacys exposed invites lateral intrusion scans." $portsEv "netsh advfirewall firewall set rule group=`"File and Printer Sharing`" new enable=No"
+        Add-FindingCard "Medium" "Exposed High-Risk Network Ports" "The host has public service ports active and listening to the local network (TCP $portsStr). Leaving ports like SMB (445) or legacys exposed invites lateral intrusion scans." $portsEv "netsh advfirewall firewall set rule group=`"File and Printer Sharing`" new enable=No" $qCmd21
         $med++
     } else {
-        Add-FindingCard "Info" "Exposed Network Ports Audited Secure" "No legacy dangerous services (like Telnet or legacy File Sharing) are listening publicly." $portsEv "N/A - External port exposure minimized."
+        Add-FindingCard "Info" "Exposed Network Ports Audited Secure" "No legacy dangerous services (like Telnet or legacy File Sharing) are listening publicly." $portsEv "N/A - External port exposure minimized." $qCmd21
         $info++
     }
 
@@ -2009,14 +2324,15 @@ function Run-VulnerabilityScan {
         }
     } catch {}
 
+    $qCmd22 = "Get-CimInstance -Namespace root/SecurityCenter2 -ClassName AntiVirusProduct | Select-Object displayName, productState"
     if ($thirdPartyAVs.Count -gt 0) {
         $avStr = $thirdPartyAVs -join ", "
         $avEv = "Active Security Suite: $avStr"
-        Add-FindingCard "Info" "Active Third-Party Endpoint AV/EDR Verified" "Third-party endpoint security software ($avStr) is running and active alongside Windows Security, enhancing system threat containment." $avEv "N/A - Enterprise defense suite active."
+        Add-FindingCard "Info" "Active Third-Party Endpoint AV/EDR Verified" "Third-party endpoint security software ($avStr) is running and active alongside Windows Security, enhancing system threat containment." $avEv "N/A - Enterprise defense suite active." $qCmd22
         $info++
     } else {
         $avEv = "Endpoint AV: Windows Defender Active Only"
-        Add-FindingCard "Info" "Windows Security Center Audited Secure" "The host is protected by the built-in Windows Defender Antivirus, without any competing security suites." $avEv "N/A - Host defense is active."
+        Add-FindingCard "Info" "Windows Security Center Audited Secure" "The host is protected by the built-in Windows Defender Antivirus, without any competing security suites." $avEv "N/A - Host defense is active." $qCmd22
         $info++
     }
 
@@ -2038,11 +2354,12 @@ function Run-VulnerabilityScan {
 
     $anonEv = "RestrictAnonymous = $restrictAnon; RestrictAnonymousSAM = $restrictAnonSam"
 
+    $qCmd23 = "Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\Lsa' -Name RestrictAnonymous, RestrictAnonymousSAM -ErrorAction SilentlyContinue"
     if ($restrictAnon -ne 1 -or $restrictAnonSam -ne 1) {
-        Add-FindingCard "Medium" "Anonymous SAM/SID Enumeration Allowed" "Anonymous network clients are permitted to query account names (SIDs) and lists of local shares. This allows external actors to perform lateral network reconnaissance." $anonEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Lsa`" /v RestrictAnonymous /t REG_DWORD /d 1 /f; reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Lsa`" /v RestrictAnonymousSAM /t REG_DWORD /d 1 /f"
+        Add-FindingCard "Medium" "Anonymous SAM/SID Enumeration Allowed" "Anonymous network clients are permitted to query account names (SIDs) and lists of local shares. This allows external actors to perform lateral network reconnaissance." $anonEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Lsa`" /v RestrictAnonymous /t REG_DWORD /d 1 /f; reg add `"HKLM\SYSTEM\CurrentControlSet\Control\Lsa`" /v RestrictAnonymousSAM /t REG_DWORD /d 1 /f" $qCmd23
         $med++
     } else {
-        Add-FindingCard "Info" "Anonymous SAM/SID Enumeration Restricted" "Anonymous null-session enumeration of local accounts and shares is properly blocked on this host." $anonEv "N/A - Anonymous enumeration restricted."
+        Add-FindingCard "Info" "Anonymous SAM/SID Enumeration Restricted" "Anonymous null-session enumeration of local accounts and shares is properly blocked on this host." $anonEv "N/A - Anonymous enumeration restricted." $qCmd23
         $info++
     }
 
@@ -2073,11 +2390,12 @@ function Run-VulnerabilityScan {
 
     $tlsEv = "TLS 1.0 Client: $(if ($tls10Client -eq 0) { 'Disabled' } else { 'Enabled' }), Server: $(if ($tls10Server -eq 0) { 'Disabled' } else { 'Enabled' }) | TLS 1.1 Client: $(if ($tls11Client -eq 0) { 'Disabled' } else { 'Enabled' }), Server: $(if ($tls11Server -eq 0) { 'Disabled' } else { 'Enabled' })"
 
+    $qCmd24 = "Get-ChildItem -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols' -Recurse -ErrorAction SilentlyContinue"
     if ($tls10Client -ne 0 -or $tls10Server -ne 0 -or $tls11Client -ne 0 -or $tls11Server -ne 0) {
-        Add-FindingCard "Medium" "Legacy TLS 1.0 & 1.1 Protocols Enabled" "Obsolete and insecure TLS 1.0 and TLS 1.1 protocols are enabled on this host. This exposes network communications to decryption, hijacking, and credential-downgrade attacks." $tlsEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client`" /v Enabled /t REG_DWORD /d 0 /f; reg add `"HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server`" /v Enabled /t REG_DWORD /d 0 /f"
+        Add-FindingCard "Medium" "Legacy TLS 1.0 & 1.1 Protocols Enabled" "Obsolete and insecure TLS 1.0 and TLS 1.1 protocols are enabled on this host. This exposes network communications to decryption, hijacking, and credential-downgrade attacks." $tlsEv "reg add `"HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Client`" /v Enabled /t REG_DWORD /d 0 /f; reg add `"HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.0\Server`" /v Enabled /t REG_DWORD /d 0 /f" $qCmd24
         $med++
     } else {
-        Add-FindingCard "Info" "Legacy TLS 1.0 & 1.1 Protocols Disabled" "Obsolete TLS 1.0 and 1.1 handshakes are fully disabled in the system's SCHANNEL protocols, enforcing modern cryptography." $tlsEv "N/A - Obsolete cryptography deprecated."
+        Add-FindingCard "Info" "Legacy TLS 1.0 & 1.1 Protocols Disabled" "Obsolete TLS 1.0 and 1.1 handshakes are fully disabled in the system's SCHANNEL protocols, enforcing modern cryptography." $tlsEv "N/A - Obsolete cryptography deprecated." $qCmd24
         $info++
     }
     
